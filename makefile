@@ -12,7 +12,7 @@ AssemblerOption = -c -coff
 ResourceCompiler = C:\masm32\bin\rc.exe
 
 Linker = C:\masm32\bin\link.exe
-LinkOption = -subsystem:windows
+LinkOption = -subsystem:windows -OUT:$(OUTPUT)
 
 # Targets Rule
 $(OUTPUT): $(OBJS) $(RESS)

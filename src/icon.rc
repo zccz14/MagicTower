@@ -1,3 +1,11 @@
 #include <resource.h>
-#define ICO_BIG 1000H
+#define ICO_BIG 0x1000
+#define IDM_MAIN 0x2000
+#define IDM_NEWGAME 0x2101
+#define IDM_EXIT 0x2102
 ICO_BIG ICON "icon.ico"
+IDM_MAIN MENU DISCARDABLE
+BEGIN
+    menuitem "пбсно╥(&N)", IDM_NEWGAME
+    menuitem "мкЁЖ(&X)", IDM_EXIT
+END
