@@ -1,7 +1,7 @@
 # Build
 OUTPUT = main.exe
 OBJS = main.obj
-RESS = icon.res
+RESS = main.res
 # Configuration
 SrcPath = src
 BuildPath = build
