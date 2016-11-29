@@ -1,0 +1,3 @@
+#include <resource.h>
+#define ICO_BIG 1000H
+ICO_BIG ICON "icon.ico"
