@@ -3,9 +3,11 @@
 #define IDM_MAIN 0x2000
 #define IDM_NEWGAME 0x2101
 #define IDM_EXIT 0x2102
+#define IDB_TEST 0x3000
 ICO_BIG ICON "icon.ico"
 IDM_MAIN MENU DISCARDABLE
 BEGIN
     menuitem "пбсно╥(&N)", IDM_NEWGAME
     menuitem "мкЁЖ(&X)", IDM_EXIT
 END
+IDB_TEST BITMAP "0.bmp"
