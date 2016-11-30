@@ -1,3 +1,7 @@
+.386
+.model flat, stdcall
+option casemap: none
+
 include windows.inc
 include gdi32.inc
 includelib gdi32.lib
@@ -17,3 +21,5 @@ MAP_SIZE equ 0Dh
 
 ICO_BIG equ 1000h
 IDM_MAIN equ 2000h
+
+include background.inc

@@ -1,6 +1,3 @@
-.386
-.model flat, stdcall
-option casemap: none
 
 include stdafx.inc
 
@@ -17,21 +14,6 @@ szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
 szClassName db 'MainWindow', 0
 szCaptionMain db 'Ä§Ëþ', 0
-szBackgoundMap dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
-               dd 0006H, 0106H, 0106H, 0106H, 0206H, 0006H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0206H
 .code
 
 PreloadBitmaps proc
@@ -41,33 +23,6 @@ PreloadBitmaps proc
     mov hBitmapHero, eax
 PreloadBitmaps endp
 
-ProcSetBackground proc hDcBack, hDcTile
-    mov esi, offset szBackgoundMap
-    mov ecx, 0
-    .while ecx < 15 * BLOCK_SIZE
-      mov edx, 0
-      .while edx < 20 * BLOCK_SIZE
-        push ecx
-        push edx
-        mov eax, [esi]
-        mov bh, ah
-        mov bl, BLOCK_SIZE
-        mul bl  ; ax = [esi]l * bl
-        push eax
-        mov al, bh
-        mul bl  ; ax = [esi]h * bl
-        mov ebx, eax
-        pop eax
-        invoke BitBlt, hDcBack, edx, ecx, BLOCK_SIZE, BLOCK_SIZE, hDcTile, ebx, eax, SRCCOPY
-        pop edx
-        pop ecx
-        add esi, 4
-        add edx, BLOCK_SIZE
-      .endw
-      add ecx, BLOCK_SIZE
-    .endw
-    ret
-ProcSetBackground endp
 
 ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @stRect: RECT

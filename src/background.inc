@@ -1,0 +1,1 @@
+ProcSetBackground proto hDcBack: HDC, hDcTile: HDC

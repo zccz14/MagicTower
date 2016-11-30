@@ -1,10 +1,9 @@
 # Build
 OUTPUT = main.exe
-OBJS = main.obj
+OBJS = main.obj background.obj
 RESS = main.res
 # Configuration
 SrcPath = src
-BuildPath = build
 
 Assembler = C:\masm32\bin\ml.exe
 AssemblerOption = -c -coff 
@@ -16,11 +15,11 @@ LinkOption = -subsystem:windows -OUT:$(OUTPUT)
 
 # Targets Rule
 $(OUTPUT): $(OBJS) $(RESS)
-	$(Linker) $(BuildPath)/$(OBJS) $(BuildPath)/$(RESS) $(LinkOption)
+	$(Linker) $(OBJS) $(RESS) $(LinkOption)
 %.obj: $(SrcPath)/%.asm
-	$(Assembler) $(AssemblerOption) -Fo $(BuildPath)/$@ $<
+	$(Assembler) $(AssemblerOption) -Fo $@ $<
 %.res: $(SrcPath)/%.rc
-	$(ResourceCompiler) -fo $(BuildPath)/$@ $<
+	$(ResourceCompiler) -fo $@ $<
 clean:
 	- rm $(BuildPath)/$(OBJS)
 	- rm $(BuildPath)/$(RESS)
