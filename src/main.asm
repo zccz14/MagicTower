@@ -2,72 +2,109 @@
 .model flat, stdcall
 option casemap: none
 
-include windows.inc
-include gdi32.inc
-includelib gdi32.lib
-include user32.inc
-includelib user32.lib
-include kernel32.inc
-includelib kernel32.lib
-include masm32.inc
-includelib masm32.lib
-include debug.inc
-includelib debug.lib
-
-ICO_BIG equ 1000h
-IDM_MAIN equ 2000h
-IDB_TEST equ 3000h
-IDB_BG equ 3001h
+include stdafx.inc
 
 .data?
 hInstance dd  ?
 hWinMain dd  ?
+hBitmapHero dd ?
+hBitmapTile dd ?
 .const
+szBitmapTile db 'images\\tile.bmp', 0
+szBitmapHero db 'images\\hero.bmp', 0
 szClassName db 'MainWindow', 0
 szCaptionMain db '魔塔', 0
-szText  db '苟利国家生死以 岂因祸福避趋之', 0
-szButton db 'button',0
-szButtonText db 'Button',0
+szBackgoundMap dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0105H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0005H, 0105H, 0105H, 0105H, 0205H, 0005H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0301H, 0205H
+               dd 0006H, 0106H, 0106H, 0106H, 0206H, 0006H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0106H, 0206H
 .code
+
+PreloadBitmaps proc
+    invoke LoadImage, NULL, addr szBitmapTile, IMAGE_BITMAP, 256, 1216, LR_LOADFROMFILE
+    mov hBitmapTile, eax
+    invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 32, 32, LR_LOADFROMFILE
+    mov hBitmapHero, eax
+PreloadBitmaps endp
+
+ProcSetBackground proc
+
+ProcSetBackground endp
 
 _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   local @stPs: PAINTSTRUCT
   local @stRect: RECT
   local @hDc
   local @hBMP
-  local @hBMPDc
+  local @hHeroDc
+  local @hTileDc
+  local @hBackDc
+  local @hBitmapBack
   mov eax, uMsg
   ; PrintHex eax
   .if eax == WM_PAINT
+    PrintHex eax
     invoke BeginPaint, hWnd, addr @stPs
     mov @hDc, eax
-
-    invoke LoadBitmap, hInstance, IDB_BG
-    mov @hBMP, eax
-    invoke CreateCompatibleDC, @hDc
-    mov @hBMPDc, eax
-    invoke SelectObject, @hBMPDc, @hBMP
-    PrintHex eax
-    invoke BitBlt, @hDc, 0, 0, 580, 435, @hBMPDc, 0, 0, SRCCOPY
-    invoke DeleteDC, @hBMPDc
-
-    invoke LoadBitmap, hInstance, IDB_TEST
-    mov @hBMP, eax
-
-    invoke CreateCompatibleDC, @hDc
-    mov @hBMPDc, eax
-    invoke SelectObject, @hBMPDc, @hBMP
     
-    invoke BitBlt, @hDc, 0, 0, 64, 64, @hBMPDc, 0, 0, SRCCOPY
-    invoke BitBlt, @hDc, 75, 150, 64, 64, @hBMPDc, 0, 0, SRCCOPY
-    invoke BitBlt, @hDc, 64, 64, 64, 64, @hBMPDc, 0, 0, SRCCOPY
-    invoke DeleteDC, @hBMPDc
+    invoke CreateCompatibleDC, @hDc
+    mov @hTileDc, eax ; tile DC
+    invoke SelectObject, @hTileDc, hBitmapTile
+    invoke BitBlt, @hDc, 0, 0, 256, 256, @hTileDc, 0, 5 * BLOCK_SIZE, SRCCOPY
+    invoke CreateCompatibleDC, @hDc
+    mov @hBackDc, eax ; background DC
+    invoke CreateCompatibleBitmap, @hDc, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
+    mov @hBitmapBack, eax ; background Bitmap
+    invoke SelectObject, @hBackDc, @hBitmapBack
+    mov esi, offset szBackgoundMap
+    mov ecx, 0
+    .while ecx < 15 * BLOCK_SIZE
+      mov edx, 0
+      .while edx < 20 * BLOCK_SIZE
+        push ecx
+        push edx
+        mov eax, [esi]
+        mov bh, ah
+        mov bl, BLOCK_SIZE
+        mul bl  ; ax = [esi]l * bl
+        push eax
+        mov al, bh
+        mul bl  ; ax = [esi]h * bl
+        mov ebx, eax
+        pop eax
+        invoke BitBlt, @hBackDc, edx, ecx, BLOCK_SIZE, BLOCK_SIZE, @hTileDc, ebx, eax, SRCCOPY
+        pop edx
+        pop ecx
+        add esi, 4
+        add edx, BLOCK_SIZE
+      .endw
+      add ecx, BLOCK_SIZE
+    .endw
+
+    invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, @hBackDc, 0, 0, SRCCOPY
+    
+    invoke CreateCompatibleDC, @hDc
+    mov @hHeroDc, eax
+    invoke SelectObject, @hHeroDc, hBitmapHero
+    
+    invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+
     ;invoke GetClientRect, hWnd, addr @stRect
     ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_CREATE
-    ; create a button
-    invoke CreateWindowEx, NULL, offset szButton, offset szButtonText, WS_CHILD or WS_VISIBLE, 10, 10, 80, 22, hWnd, 1, hInstance, NULL
+    ; do nothing
   .elseif eax == WM_CLOSE
     invoke DestroyWindow, hWinMain
     invoke PostQuitMessage, NULL
@@ -105,22 +142,21 @@ _WinMain proc
 
   invoke LoadMenu, hInstance, IDM_MAIN
   mov @hMenu, eax
-  PrintHex eax
-  invoke LoadBitmap, hInstance, IDB_TEST
-  PrintHex eax
-  invoke LoadBitmap, hInstance, IDB_BG
-  PrintHex eax
 
   invoke RegisterClassEx, addr @stWndClass
-  ; create a window
-  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPEDWINDOW, 100, 100, 600, 400, NULL, @hMenu, hInstance, NULL
+  ; create a client edged window
+  ; whose class is 'szClassName',
+  ; and caption is 'szCaptionMain'
+  ;  
+  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, @hMenu, hInstance, NULL
   mov hWinMain, eax ; mark hWinMain as the main window
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
   invoke LoadIcon, hInstance, ICO_BIG
   invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, eax
   invoke ShowWindow, hWinMain, SW_SHOWNORMAL ; show window in a normal way
-
-  .while TRUE
+  ;invoke SetLayeredWindowAttributes, hWinMain, window_background_brush, 255, LWA_COLORKEY
+  ; main loop
+  .while 1
     PrintLine
     invoke GetMessage, addr @stMsg, NULL, 0, 0
     .break .if eax == 0 ; WM_QUIT => eax == 0
@@ -132,7 +168,7 @@ _WinMain endp
 
 
 __main proc
-  PrintLine
+  call PreloadBitmaps
   invoke _WinMain
   invoke ExitProcess, 0
 __main endp
