@@ -4,6 +4,9 @@ option casemap: none
 
 include stdafx.inc
 
+.data
+HeroPosX dd 0
+HeroPosY dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
@@ -38,35 +41,7 @@ PreloadBitmaps proc
     mov hBitmapHero, eax
 PreloadBitmaps endp
 
-ProcSetBackground proc
-
-ProcSetBackground endp
-
-_ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
-  local @stPs: PAINTSTRUCT
-  local @stRect: RECT
-  local @hDc
-  local @hBMP
-  local @hHeroDc
-  local @hTileDc
-  local @hBackDc
-  local @hBitmapBack
-  mov eax, uMsg
-  ; PrintHex eax
-  .if eax == WM_PAINT
-    PrintHex eax
-    invoke BeginPaint, hWnd, addr @stPs
-    mov @hDc, eax
-    
-    invoke CreateCompatibleDC, @hDc
-    mov @hTileDc, eax ; tile DC
-    invoke SelectObject, @hTileDc, hBitmapTile
-    invoke BitBlt, @hDc, 0, 0, 256, 256, @hTileDc, 0, 5 * BLOCK_SIZE, SRCCOPY
-    invoke CreateCompatibleDC, @hDc
-    mov @hBackDc, eax ; background DC
-    invoke CreateCompatibleBitmap, @hDc, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
-    mov @hBitmapBack, eax ; background Bitmap
-    invoke SelectObject, @hBackDc, @hBitmapBack
+ProcSetBackground proc hDcBack, hDcTile
     mov esi, offset szBackgoundMap
     mov ecx, 0
     .while ecx < 15 * BLOCK_SIZE
@@ -83,7 +58,7 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
         mul bl  ; ax = [esi]h * bl
         mov ebx, eax
         pop eax
-        invoke BitBlt, @hBackDc, edx, ecx, BLOCK_SIZE, BLOCK_SIZE, @hTileDc, ebx, eax, SRCCOPY
+        invoke BitBlt, hDcBack, edx, ecx, BLOCK_SIZE, BLOCK_SIZE, hDcTile, ebx, eax, SRCCOPY
         pop edx
         pop ecx
         add esi, 4
@@ -91,18 +66,93 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
       .endw
       add ecx, BLOCK_SIZE
     .endw
+    ret
+ProcSetBackground endp
+
+ProcKeydown proc hWnd, uMsg, wParam, lParam
+  local @stRect: RECT
+  .if wParam == VK_UP
+    .if HeroPosY > 0
+      dec HeroPosY
+    .endif
+    invoke UpdateWindow, hWinMain
+  .elseif wParam == VK_DOWN
+    .if HeroPosY < MAP_SIZE - 1
+      inc HeroPosY
+    .endif
+    invoke UpdateWindow, hWinMain
+  .elseif wParam == VK_LEFT
+    .if HeroPosX > 0
+      dec HeroPosX
+    .endif
+    invoke UpdateWindow, hWinMain
+  .elseif wParam == VK_RIGHT
+    .if HeroPosX < MAP_SIZE - 1
+      inc HeroPosX
+    .endif
+    invoke UpdateWindow, hWinMain
+  .else
+    ret
+  .endif
+  invoke GetClientRect, hWnd, addr @stRect
+  invoke InvalidateRect, hWnd, addr @stRect, TRUE
+  invoke UpdateWindow, hWnd
+  ret
+ProcKeydown endp
+
+_ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
+  local @stPs: PAINTSTRUCT
+  local @stRect: RECT
+  local @hDc
+  local @hBMP
+  local @hHeroDc
+  local @hTileDc
+  local @hBackDc
+  local @hBitmapBack
+  mov eax, uMsg
+  ; PrintHex eax
+  .if eax == WM_PAINT
+    invoke BeginPaint, hWnd, addr @stPs
+    mov @hDc, eax
+    
+    invoke CreateCompatibleDC, @hDc
+    mov @hTileDc, eax ; tile DC
+    invoke SelectObject, @hTileDc, hBitmapTile
+    invoke CreateCompatibleDC, @hDc
+    mov @hBackDc, eax ; background DC
+    invoke CreateCompatibleBitmap, @hDc, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
+    mov @hBitmapBack, eax ; background Bitmap
+    invoke SelectObject, @hBackDc, @hBitmapBack
+    invoke ProcSetBackground, @hBackDc, @hTileDc
 
     invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, @hBackDc, 0, 0, SRCCOPY
+    invoke DeleteObject, @hBitmapBack
+    invoke DeleteDC, @hBackDc
+    invoke DeleteDC, @hTileDc
     
     invoke CreateCompatibleDC, @hDc
     mov @hHeroDc, eax
     invoke SelectObject, @hHeroDc, hBitmapHero
     
     invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    mov eax, HeroPosX
+    add eax, 6
+    mov bx, BLOCK_SIZE
+    mul bx
+    push eax
+    mov eax, HeroPosY
+    add eax, 1
+    mul bx
+    pop ebx
+    invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
 
-    ;invoke GetClientRect, hWnd, addr @stRect
+    invoke DeleteDC, @hHeroDc
+
+
     ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
     invoke EndPaint, hWnd, addr @stPs
+  .elseif eax == WM_KEYDOWN
+    invoke ProcKeydown, hWnd, uMsg, wParam, lParam
   .elseif eax == WM_CREATE
     ; do nothing
   .elseif eax == WM_CLOSE
@@ -157,7 +207,6 @@ _WinMain proc
   ;invoke SetLayeredWindowAttributes, hWinMain, window_background_brush, 255, LWA_COLORKEY
   ; main loop
   .while 1
-    PrintLine
     invoke GetMessage, addr @stMsg, NULL, 0, 0
     .break .if eax == 0 ; WM_QUIT => eax == 0
     invoke TranslateMessage, addr @stMsg

@@ -13,6 +13,7 @@ include debug.inc
 includelib debug.lib
 
 BLOCK_SIZE equ 20h
+MAP_SIZE equ 0Dh
 
 ICO_BIG equ 1000h
 IDM_MAIN equ 2000h
