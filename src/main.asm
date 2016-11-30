@@ -9,7 +9,9 @@ hInstance dd  ?
 hWinMain dd  ?
 hBitmapHero dd ?
 hBitmapTile dd ?
+hIcon dd ?
 .const
+szIcon db 'images\\icon.ico', 0
 szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
 szClassName db 'MainWindow', 0
@@ -21,6 +23,9 @@ PreloadBitmaps proc
     mov hBitmapTile, eax
     invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 32, 32, LR_LOADFROMFILE
     mov hBitmapHero, eax
+    invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
+    mov hIcon, eax
+    ret
 PreloadBitmaps endp
 
 
@@ -131,8 +136,6 @@ _WinMain proc
   mov hInstance, eax
   mov @stWndClass.hInstance, eax ; 指定要注册的窗口类属于哪个模块
   invoke RtlZeroMemory, addr @stWndClass, sizeof @stWndClass 
-  
-  invoke LoadIcon, hInstance, ICO_BIG
   mov @stWndClass.hIcon, eax
   mov @stWndClass.hIconSm, eax
 
@@ -156,10 +159,8 @@ _WinMain proc
   invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, @hMenu, hInstance, NULL
   mov hWinMain, eax ; mark hWinMain as the main window
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
-  invoke LoadIcon, hInstance, ICO_BIG
-  invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, eax
+  invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, hIcon
   invoke ShowWindow, hWinMain, SW_SHOWNORMAL ; show window in a normal way
-  ;invoke SetLayeredWindowAttributes, hWinMain, window_background_brush, 255, LWA_COLORKEY
   ; main loop
   .while 1
     invoke GetMessage, addr @stMsg, NULL, 0, 0
