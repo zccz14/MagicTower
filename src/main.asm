@@ -17,6 +17,7 @@ includelib debug.lib
 ICO_BIG equ 1000h
 IDM_MAIN equ 2000h
 IDB_TEST equ 3000h
+IDB_BG equ 3001h
 
 .data?
 hInstance dd  ?
@@ -36,10 +37,19 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   local @hBMP
   local @hBMPDc
   mov eax, uMsg
-  PrintHex eax
+  ; PrintHex eax
   .if eax == WM_PAINT
     invoke BeginPaint, hWnd, addr @stPs
     mov @hDc, eax
+
+    invoke LoadBitmap, hInstance, IDB_BG
+    mov @hBMP, eax
+    invoke CreateCompatibleDC, @hDc
+    mov @hBMPDc, eax
+    invoke SelectObject, @hBMPDc, @hBMP
+    PrintHex eax
+    invoke BitBlt, @hDc, 0, 0, 580, 435, @hBMPDc, 0, 0, SRCCOPY
+    invoke DeleteDC, @hBMPDc
 
     invoke LoadBitmap, hInstance, IDB_TEST
     mov @hBMP, eax
@@ -48,20 +58,16 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     mov @hBMPDc, eax
     invoke SelectObject, @hBMPDc, @hBMP
     
-    invoke BitBlt, @hDc, 0, 0, 75, 75, @hBMPDc, 0, 0, SRCCOPY
-    invoke BitBlt, @hDc, 75, 150, 75, 75, @hBMPDc, 0, 0, SRCCOPY
-    invoke BitBlt, @hDc, 50, 50, 75, 75, @hBMPDc, 0, 0, SRCCOPY
+    invoke BitBlt, @hDc, 0, 0, 64, 64, @hBMPDc, 0, 0, SRCCOPY
+    invoke BitBlt, @hDc, 75, 150, 64, 64, @hBMPDc, 0, 0, SRCCOPY
+    invoke BitBlt, @hDc, 64, 64, 64, 64, @hBMPDc, 0, 0, SRCCOPY
     invoke DeleteDC, @hBMPDc
     ;invoke GetClientRect, hWnd, addr @stRect
     ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_CREATE
     ; create a button
-    invoke CreateWindowEx, NULL,\
-      offset szButton, offset szButtonText,\
-      WS_CHILD or WS_VISIBLE,\
-      10, 10, 80, 22,\
-      hWnd, 1, hInstance, NULL    
+    invoke CreateWindowEx, NULL, offset szButton, offset szButtonText, WS_CHILD or WS_VISIBLE, 10, 10, 80, 22, hWnd, 1, hInstance, NULL
   .elseif eax == WM_CLOSE
     invoke DestroyWindow, hWinMain
     invoke PostQuitMessage, NULL
@@ -102,14 +108,12 @@ _WinMain proc
   PrintHex eax
   invoke LoadBitmap, hInstance, IDB_TEST
   PrintHex eax
+  invoke LoadBitmap, hInstance, IDB_BG
+  PrintHex eax
 
   invoke RegisterClassEx, addr @stWndClass
   ; create a window
-  invoke CreateWindowEx, WS_EX_CLIENTEDGE,\ 
-    addr szClassName, addr szCaptionMain, \
-    WS_OVERLAPPEDWINDOW, \
-    100, 100, 600, 400, \
-    NULL, @hMenu, hInstance, NULL
+  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPEDWINDOW, 100, 100, 600, 400, NULL, @hMenu, hInstance, NULL
   mov hWinMain, eax ; mark hWinMain as the main window
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
   invoke LoadIcon, hInstance, ICO_BIG
