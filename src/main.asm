@@ -21,7 +21,7 @@ szCaptionMain db '魔塔', 0
 PreloadBitmaps proc
     invoke LoadImage, NULL, addr szBitmapTile, IMAGE_BITMAP, 256, 1216, LR_LOADFROMFILE
     mov hBitmapTile, eax
-    invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 32, 32, LR_LOADFROMFILE
+    invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 128, 132, LR_LOADFROMFILE
     mov hBitmapHero, eax
     invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
     mov hIcon, eax
@@ -134,7 +134,7 @@ _WinMain proc
   local @hIcon: HICON
   invoke GetModuleHandle, NULL
   mov hInstance, eax
-  mov @stWndClass.hInstance, eax ; 指定要注册的窗口类属于哪个模块
+  mov @stWndClass.hInstance, eax
   invoke RtlZeroMemory, addr @stWndClass, sizeof @stWndClass 
   mov @stWndClass.hIcon, eax
   mov @stWndClass.hIconSm, eax
