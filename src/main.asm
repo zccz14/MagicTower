@@ -4,21 +4,30 @@ include stdafx.inc
 .data
 HeroPosX dd 0
 HeroPosY dd 0
+HeroHealth dd 1000
+HeroAttack dd 100
+HeroDefence dd 100
+HeroMoney dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
 hBitmapHero dd ?
 hBitmapTile dd ?
 hIcon dd ?
+hMenu dd ?
 .const
 szIcon db 'images\\icon.ico', 0
 szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
 szClassName db 'MainWindow', 0
+szMenuNewGame db '新游戏(&N)', 0
+szMenuQuit db '退出(&Q)', 0
 szCaptionMain db '魔塔', 0
+szHeroHealth db '生命', 0
+szHeroAttack db '攻击力', 0
 .code
 
-PreloadBitmaps proc
+PreloadImages proc
     invoke LoadImage, NULL, addr szBitmapTile, IMAGE_BITMAP, 256, 1216, LR_LOADFROMFILE
     mov hBitmapTile, eax
     invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 128, 132, LR_LOADFROMFILE
@@ -26,7 +35,7 @@ PreloadBitmaps proc
     invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
     mov hIcon, eax
     ret
-PreloadBitmaps endp
+PreloadImages endp
 
 
 ProcKeydown proc hWnd, uMsg, wParam, lParam
@@ -148,6 +157,11 @@ _WinMain proc
   mov @stWndClass.hbrBackground, COLOR_WINDOW + 1
   mov @stWndClass.lpszClassName, offset szClassName
 
+  invoke CreateMenu
+  mov hMenu, eax
+  invoke AppendMenu, hMenu, 0, IDM_NEWGAME, offset szMenuNewGame
+  invoke AppendMenu, hMenu, 0, IDM_QUIT, offset szMenuQuit
+
   invoke LoadMenu, hInstance, IDM_MAIN
   mov @hMenu, eax
 
@@ -156,7 +170,7 @@ _WinMain proc
   ; whose class is 'szClassName',
   ; and caption is 'szCaptionMain'
   ;  
-  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, @hMenu, hInstance, NULL
+  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, hMenu, hInstance, NULL
   mov hWinMain, eax ; mark hWinMain as the main window
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
   invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, hIcon
@@ -173,7 +187,7 @@ _WinMain endp
 
 
 __main proc
-  call PreloadBitmaps
+  call PreloadImages
   invoke _WinMain
   invoke ExitProcess, 0
 __main endp

@@ -21,5 +21,7 @@ MAP_SIZE equ 0Dh
 
 ICO_BIG equ 1000h
 IDM_MAIN equ 2000h
+IDM_NEWGAME equ 2001h
+IDM_QUIT equ 2002h
 
 include background.inc
