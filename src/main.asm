@@ -127,6 +127,12 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   .elseif eax == WM_CLOSE
     invoke DestroyWindow, hWinMain
     invoke PostQuitMessage, NULL
+  .elseif eax == WM_COMMAND
+    .if wParam == IDM_NEWGAME
+      invoke MessageBox, hWinMain, addr szHeroHealth, addr szHeroAttack, MB_OK
+    .elseif wParam == IDM_QUIT
+      invoke PostQuitMessage, 0
+    .endif
   .else
     ; default process
     invoke DefWindowProc, hWnd, uMsg, wParam, lParam
