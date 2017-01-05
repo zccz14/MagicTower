@@ -1,1 +1,2 @@
 PlayIdleBGM proto
+PlayOnWalk proto

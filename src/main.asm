@@ -3,6 +3,7 @@ include <images.inc>
 include <background.inc>
 include <braver.inc>
 include <timer.inc>
+include <audio.inc>
 
 .data
 .data?
@@ -17,7 +18,6 @@ szMenuQuit db 'ÍË³ö(&Q)', 0
 szCaptionMain db 'Ä§Ëþ', 0
 szHeroHealth db 'ÉúÃü', 0
 szHeroAttack db '¹¥»÷Á¦', 0
-szMusicName db 'audio\\walk.wav', 0
 .code
 
 GetBlockRect proc x, y, pstRect
@@ -71,7 +71,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   .else
     ret
   .endif
-  invoke PlaySound, addr szMusicName, 0, SND_NODEFAULT or SND_FILENAME
+  invoke PlayOnWalk
   invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
   invoke InvalidateRect, hWnd, addr @stRect, TRUE
   invoke UpdateWindow, hWnd
