@@ -43,3 +43,8 @@ Braver struct
     MON dword 0
     pos Position <>
 Braver ends
+
+mLet macro x, y
+    mov eax, y
+    mov x, eax
+endm

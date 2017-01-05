@@ -39,42 +39,45 @@ GetBlockRect proc x, y, pstRect
   ret
 GetBlockRect endp
 
+Touch proc x, y
+  xor eax, eax
+  .if x > MAP_SIZE - 1 || y > MAP_SIZE - 1
+    ret
+  .endif
+  mov eax, 1
+  ret
+Touch endp
+
 ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @stRect: RECT
-;  local @lNewX
-;  local @lNewY
-  invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
-  invoke InvalidateRect, hWnd, addr @stRect, TRUE
-;  mov @lNewX, I.pos.x
-;  mov @lNewY, I.pos.y
+  local @lNewX
+  local @lNewY
+  mLet @lNewX, I.pos.x
+  mLet @lNewY, I.pos.y
   .if wParam == VK_UP
-;    dec @lNewX
-    .if I.pos.y > 0
-      dec I.pos.y
-    .endif
-;    invoke UpdateWindow, hWinMain
+    dec @lNewY
   .elseif wParam == VK_DOWN
-    .if I.pos.y < MAP_SIZE - 1
-      inc I.pos.y
-    .endif
-;    invoke UpdateWindow, hWinMain
+    inc @lNewY
   .elseif wParam == VK_LEFT
-    .if I.pos.x > 0
-      dec I.pos.x
-    .endif
-;    invoke UpdateWindow, hWinMain
+    dec @lNewX
   .elseif wParam == VK_RIGHT
-    .if I.pos.x < MAP_SIZE - 1
-      inc I.pos.x
-    .endif
-;    invoke UpdateWindow, hWinMain
+    inc @lNewX
   .else
     ret
   .endif
-  invoke PlayOnWalk
-  invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
-  invoke InvalidateRect, hWnd, addr @stRect, TRUE
-  invoke UpdateWindow, hWnd
+  invoke Touch, @lNewX, @lNewY
+  .if eax == 0
+    ret
+  .else
+    invoke PlayOnWalk
+    invoke GetBlockRect, @lNewX, @lNewY, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    mLet I.pos.x, @lNewX
+    mLet I.pos.y, @lNewY
+    invoke UpdateWindow, hWnd
+  .endif
   ret
 ProcKeydown endp
 
