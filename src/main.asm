@@ -87,7 +87,6 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   local @hDc
   local @hBMP
   local @hHeroDc
-  local @hTileDc
   local @hBackDc
   local @hBitmapBack
   mov eax, uMsg
@@ -96,26 +95,26 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke BeginPaint, hWnd, addr @stPs
     mov @hDc, eax
     
-    invoke CreateCompatibleDC, @hDc
-    mov @hTileDc, eax ; tile DC
-    invoke SelectObject, @hTileDc, hBitmapTile
+    ;invoke CreateCompatibleDC, @hDc
+    ;mov hDCTile, eax ; tile DC
+    ;invoke SelectObject, hDCTile, hBitmapTile
     invoke CreateCompatibleDC, @hDc
     mov @hBackDc, eax ; background DC
     invoke CreateCompatibleBitmap, @hDc, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
     mov @hBitmapBack, eax ; background Bitmap
     invoke SelectObject, @hBackDc, @hBitmapBack
-    invoke ProcSetBackground, @hBackDc, @hTileDc
+    invoke ProcSetBackground, @hBackDc, hDCTile
 
     invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, @hBackDc, 0, 0, SRCCOPY
     invoke DeleteObject, @hBitmapBack
     invoke DeleteDC, @hBackDc
-    invoke DeleteDC, @hTileDc
-    
+    invoke BitBlt, @hDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCWall, 0, 0, SRCCOPY
+    PrintHex eax
     invoke CreateCompatibleDC, @hDc
     mov @hHeroDc, eax
     invoke SelectObject, @hHeroDc, hBitmapHero
-    
-    invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    ;invoke BitBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, SRCCOPY
+    invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
     mov eax, I.pos.x
     add eax, 6
     mov bx, BLOCK_SIZE
@@ -125,9 +124,8 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     add eax, 1
     mul bx
     pop ebx
-    invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-
-    invoke DeleteDC, @hHeroDc
+    invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    ;invoke DeleteDC, @hHeroDc
 
 
     ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
@@ -194,6 +192,7 @@ _WinMain proc
   invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, hIcon
   invoke ShowWindow, hWinMain, SW_SHOWNORMAL ; show window in a normal way
   invoke SetTimer, hWinMain, TIMERID_IDLE_BGM, INTERVAL_IDLE_BGM, lpfnTimerIdleBGM
+  invoke PrepareDC, hWinMain
   ; main loop
   .while 1
     invoke GetMessage, addr @stMsg, NULL, 0, 0
@@ -206,6 +205,7 @@ _WinMain endp
 
 
 __main proc
+  PrintLine
   invoke PreloadImages
   invoke _WinMain
   invoke ExitProcess, 0
