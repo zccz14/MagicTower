@@ -4,6 +4,7 @@ include <background.inc>
 include <braver.inc>
 include <timer.inc>
 include <audio.inc>
+include <map.inc>
 
 .data
 szText db 100 dup(?), 0
@@ -112,17 +113,6 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, hDCBackground, 0, 0, SRCCOPY
     ; avatar
     invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-    ; draw braver by position
-    mov eax, I.pos.x
-    add eax, 6
-    mov bx, BLOCK_SIZE
-    mul bx
-    push eax
-    mov eax, I.pos.y
-    add eax, 1
-    mul bx
-    pop ebx
-    invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
     ; Floor Number
     assume esi: ptr HDC
     lea esi, hDCNumbers
@@ -145,6 +135,10 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke TransparentBlt, @hDc, 3 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, [esi + ebx], 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
     assume esi: nothing
 
+    invoke GetMapDC, hWnd, 0
+    PrintHex eax
+    invoke BitBlt, @hDc, 6 * BLOCK_SIZE, BLOCK_SIZE, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, eax, 0, 0, SRCCOPY
+
     invoke crt_sprintf, addr szText, addr szHeroHealth, I.HP
     invoke DrawText, @hDc, addr szText, -1, addr stRectHP, DT_SINGLELINE or DT_CENTER or DT_VCENTER
     invoke crt_sprintf, addr szText, addr szHeroAttack, I.ATK
@@ -153,6 +147,17 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke DrawText, @hDc, addr szText, -1, addr stRectDEF, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
     invoke crt_sprintf, addr szText, addr szHeroMoney, I.MON
     invoke DrawText, @hDc, addr szText, -1, addr stRectMoney, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
+    ; draw braver by position
+    mov eax, I.pos.x
+    add eax, 6
+    mov bx, BLOCK_SIZE
+    mul bx
+    push eax
+    mov eax, I.pos.y
+    add eax, 1
+    mul bx
+    pop ebx
+    invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
 
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_KEYDOWN

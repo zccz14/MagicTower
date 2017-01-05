@@ -1,6 +1,6 @@
 # Build
 OUTPUT = main.exe
-OBJS = main.obj background.obj images.obj braver.obj timer.obj audio.obj
+OBJS = main.obj background.obj images.obj braver.obj timer.obj audio.obj map.obj
 # Configuration
 SrcPath = src
 
