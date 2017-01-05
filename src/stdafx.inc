@@ -25,16 +25,15 @@ IDM_NEWGAME equ 2001h
 IDM_QUIT equ 2002h
 
 Position struct
-    x dd ?
-    y dd ?
-    z dd ?
+    x dword 0
+    y dword 0
+    z dword 1
 Position ends
 
 Braver struct
-    HP dd 1000
-    ATK dd 100
-    DEF dd 100
-    MON dd 0
+    HP dword 1000
+    ATK dword 100
+    DEF dword 100
+    MON dword 0
     pos Position <>
-    POSY dd 0
 Braver ends

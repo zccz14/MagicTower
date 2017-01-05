@@ -18,33 +18,58 @@ szHeroHealth db 'ÉúÃü', 0
 szHeroAttack db '¹¥»÷Á¦', 0
 .code
 
+GetBlockRect proc x, y, pstRect
+  mov ebx, BLOCK_SIZE
+  assume esi: ptr RECT
+  mov esi, pstRect
+  mov eax, x
+  add eax, 6
+  mul ebx
+  mov [esi].left, eax; left = (x + 6) * BLOCK_SIZE
+  add eax, BLOCK_SIZE
+  mov [esi].right, eax; right = left + BLOCK_SIZE
+  mov eax, y
+  add eax, 1
+  mul ebx
+  mov [esi].top, eax; top = (y + 1) * BLOCK_SIZE
+  add eax, BLOCK_SIZE
+  mov [esi].bottom, eax; bottom = top + BLOCK_SIZE
+  ret
+GetBlockRect endp
 
 ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @stRect: RECT
+;  local @lNewX
+;  local @lNewY
+  invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
+  invoke InvalidateRect, hWnd, addr @stRect, TRUE
+;  mov @lNewX, I.pos.x
+;  mov @lNewY, I.pos.y
   .if wParam == VK_UP
+;    dec @lNewX
     .if I.pos.y > 0
       dec I.pos.y
     .endif
-    invoke UpdateWindow, hWinMain
+;    invoke UpdateWindow, hWinMain
   .elseif wParam == VK_DOWN
     .if I.pos.y < MAP_SIZE - 1
       inc I.pos.y
     .endif
-    invoke UpdateWindow, hWinMain
+;    invoke UpdateWindow, hWinMain
   .elseif wParam == VK_LEFT
     .if I.pos.x > 0
       dec I.pos.x
     .endif
-    invoke UpdateWindow, hWinMain
+;    invoke UpdateWindow, hWinMain
   .elseif wParam == VK_RIGHT
     .if I.pos.x < MAP_SIZE - 1
       inc I.pos.x
     .endif
-    invoke UpdateWindow, hWinMain
+;    invoke UpdateWindow, hWinMain
   .else
     ret
   .endif
-  invoke GetClientRect, hWnd, addr @stRect
+  invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
   invoke InvalidateRect, hWnd, addr @stRect, TRUE
   invoke UpdateWindow, hWnd
   ret
@@ -157,7 +182,7 @@ _WinMain proc
   ; whose class is 'szClassName',
   ; and caption is 'szCaptionMain'
   ;  
-  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, hMenu, hInstance, NULL
+  invoke CreateWindowEx, WS_EX_CLIENTEDGE, addr szClassName, addr szCaptionMain, WS_OVERLAPPED or WS_CAPTION or WS_SYSMENU or WS_EX_COMPOSITED, 0, 0, 20 * BLOCK_SIZE + 10, 15 * BLOCK_SIZE + 50, NULL, hMenu, hInstance, NULL
   mov hWinMain, eax ; mark hWinMain as the main window
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
   invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, hIcon
