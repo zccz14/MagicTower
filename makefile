@@ -1,6 +1,6 @@
 # Build
 OUTPUT = main.exe
-OBJS = main.obj background.obj images.obj braver.obj
+OBJS = main.obj background.obj images.obj braver.obj idle_bgm.obj
 # Configuration
 SrcPath = src
 

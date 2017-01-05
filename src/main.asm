@@ -2,6 +2,7 @@ include <stdafx.inc>
 include <images.inc>
 include <background.inc>
 include <braver.inc>
+include <idle_bgm.inc>
 
 .data
 .data?
@@ -16,6 +17,7 @@ szMenuQuit db 'ÍË³ö(&Q)', 0
 szCaptionMain db 'Ä§Ëþ', 0
 szHeroHealth db 'ÉúÃü', 0
 szHeroAttack db '¹¥»÷Á¦', 0
+szMusicName db 'audio\\walk.wav', 0
 .code
 
 GetBlockRect proc x, y, pstRect
@@ -69,6 +71,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   .else
     ret
   .endif
+  invoke PlaySound, addr szMusicName, 0, SND_ASYNC or SND_NODEFAULT or SND_FILENAME
   invoke GetBlockRect, I.pos.x, I.pos.y, addr @stRect
   invoke InvalidateRect, hWnd, addr @stRect, TRUE
   invoke UpdateWindow, hWnd
@@ -187,6 +190,7 @@ _WinMain proc
   invoke UpdateWindow, hWinMain ; send WM_PRINT to hWinMain
   invoke SendMessage, hWinMain, WM_SETICON, ICON_BIG, hIcon
   invoke ShowWindow, hWinMain, SW_SHOWNORMAL ; show window in a normal way
+  invoke SetTimer, hWinMain, TIMERID_IDLE_BGM, INTERVAL_IDLE_BGM, PlayIdleBGM
   ; main loop
   .while 1
     invoke GetMessage, addr @stMsg, NULL, 0, 0
