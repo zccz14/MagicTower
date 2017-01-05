@@ -1,10 +1,10 @@
-# Ä§Ëþ
+# Magic Tower
 
-ÓÃ Win32 »ã±àÊµÏÖ¡£
+Implement with Win32 Assembly.
 
 ## Build
 
-Use `mingw32-make` in windows to build the project.
+Use `mingw32-make` or other programs that can handle `makefile` in windows to build the project.
 
 ```bash
 $ mingw32-make
