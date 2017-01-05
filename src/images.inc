@@ -6,6 +6,7 @@ extrn hDCFloor: HDC
 extrn hDCWall: HDC
 extrn hDCBraver: HDC
 extrn hDCBackground: HDC
+extrn hDCNumbers: ptr HDC
 
 PreloadImages proto
 PrepareDC proto hWnd: HWND

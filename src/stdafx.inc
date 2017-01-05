@@ -17,6 +17,8 @@ include debug.inc
 includelib debug.lib
 include <winmm.inc>
 includelib winmm.lib
+include <msvcrt.inc>
+includelib msvcrt.lib
 
 BLOCK_SIZE equ 20h
 MAP_SIZE equ 0Dh

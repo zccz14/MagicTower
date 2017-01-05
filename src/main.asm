@@ -6,18 +6,27 @@ include <timer.inc>
 include <audio.inc>
 
 .data
+szText db 100 dup(?), 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
 hMenu dd ?
 .const
-
+szIntegerFormat db '%d', 0
 szClassName db 'MainWindow', 0
 szMenuNewGame db '新游戏(&N)', 0
 szMenuQuit db '退出(&Q)', 0
 szCaptionMain db '魔塔', 0
-szHeroHealth db '生命', 0
-szHeroAttack db '攻击力', 0
+szHeroHealth db '生命：%d', 0
+szHeroAttack db '攻击力：%d', 0
+szHeroDEF db '防御力：%d', 0
+szHeroMoney db '金币：%d', 0
+
+stRectFloor RECT <2 * BLOCK_SIZE, BLOCK_SIZE, 4 * BLOCK_SIZE, 2 * BLOCK_SIZE>
+stRectHP RECT <1 * BLOCK_SIZE, 3 * BLOCK_SIZE, 4 * BLOCK_SIZE, 4 * BLOCK_SIZE>
+stRectATK RECT <1 * BLOCK_SIZE, 4 * BLOCK_SIZE, 4 * BLOCK_SIZE, 5 * BLOCK_SIZE>
+stRectDEF RECT <1 * BLOCK_SIZE, 5 * BLOCK_SIZE, 4 * BLOCK_SIZE, 6 * BLOCK_SIZE>
+stRectMoney RECT <1 * BLOCK_SIZE, 6 * BLOCK_SIZE, 4 * BLOCK_SIZE, 7 * BLOCK_SIZE>
 .code
 
 GetBlockRect proc x, y, pstRect
@@ -39,9 +48,17 @@ GetBlockRect proc x, y, pstRect
   ret
 GetBlockRect endp
 
-Touch proc x, y
+Touch proc hWnd, x, y
+  local @stRect: RECT
   xor eax, eax
   .if x > MAP_SIZE - 1 || y > MAP_SIZE - 1
+    inc I.pos.z
+    dec I.HP
+    invoke InvalidateRect, hWnd, addr stRectFloor, TRUE
+    invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+    invoke UpdateWindow, hWnd
+    PrintHex I.pos.z
+    xor eax, eax
     ret
   .endif
   mov eax, 1
@@ -65,7 +82,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   .else
     ret
   .endif
-  invoke Touch, @lNewX, @lNewY
+  invoke Touch, hWnd, @lNewX, @lNewY
   .if eax == 0
     ret
   .else
@@ -85,10 +102,7 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   local @stPs: PAINTSTRUCT
   local @stRect: RECT
   local @hDc
-  local @hBMP
-  local @hHeroDc
-  local @hBackDc
-  local @hBitmapBack
+  local @hDCTemp
   mov eax, uMsg
   ; PrintHex eax
   .if eax == WM_PAINT
@@ -109,7 +123,37 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     mul bx
     pop ebx
     invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-    ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+    ; Floor Number
+    assume esi: ptr HDC
+    lea esi, hDCNumbers
+    mov ebx, 100
+    mov edx, 0
+    mov eax, I.pos.z
+    div ebx
+    mov eax, edx
+    mov edx, 0
+    mov ebx, 10
+    div ebx
+    shl eax, 2
+    shl edx, 2
+    PrintHex eax
+    PrintHex edx
+    push edx
+    mov ebx, eax
+    invoke TransparentBlt, @hDc, 2 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, [esi + ebx], 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    pop ebx
+    invoke TransparentBlt, @hDc, 3 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, [esi + ebx], 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    assume esi: nothing
+
+    invoke crt_sprintf, addr szText, addr szHeroHealth, I.HP
+    invoke DrawText, @hDc, addr szText, -1, addr stRectHP, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+    invoke crt_sprintf, addr szText, addr szHeroAttack, I.ATK
+    invoke DrawText, @hDc, addr szText, -1, addr stRectATK, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
+    invoke crt_sprintf, addr szText, addr szHeroDEF, I.DEF
+    invoke DrawText, @hDc, addr szText, -1, addr stRectDEF, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
+    invoke crt_sprintf, addr szText, addr szHeroMoney, I.MON
+    invoke DrawText, @hDc, addr szText, -1, addr stRectMoney, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
+
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_KEYDOWN
     invoke ProcKeydown, hWnd, uMsg, wParam, lParam
