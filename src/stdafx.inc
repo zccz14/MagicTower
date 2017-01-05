@@ -24,4 +24,17 @@ IDM_MAIN equ 2000h
 IDM_NEWGAME equ 2001h
 IDM_QUIT equ 2002h
 
-include background.inc
+Position struct
+    x dd ?
+    y dd ?
+    z dd ?
+Position ends
+
+Braver struct
+    HP dd 1000
+    ATK dd 100
+    DEF dd 100
+    MON dd 0
+    pos Position <>
+    POSY dd 0
+Braver ends

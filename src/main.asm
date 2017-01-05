@@ -1,12 +1,9 @@
-include stdafx.inc
-include images.inc
+include <stdafx.inc>
+include <images.inc>
+include <background.inc>
+include <braver.inc>
+
 .data
-HeroPosX dd 0
-HeroPosY dd 0
-HeroHealth dd 1000
-HeroAttack dd 100
-HeroDefence dd 100
-HeroMoney dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
@@ -25,23 +22,23 @@ szHeroAttack db '¹¥»÷Á¦', 0
 ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @stRect: RECT
   .if wParam == VK_UP
-    .if HeroPosY > 0
-      dec HeroPosY
+    .if I.pos.y > 0
+      dec I.pos.y
     .endif
     invoke UpdateWindow, hWinMain
   .elseif wParam == VK_DOWN
-    .if HeroPosY < MAP_SIZE - 1
-      inc HeroPosY
+    .if I.pos.y < MAP_SIZE - 1
+      inc I.pos.y
     .endif
     invoke UpdateWindow, hWinMain
   .elseif wParam == VK_LEFT
-    .if HeroPosX > 0
-      dec HeroPosX
+    .if I.pos.x > 0
+      dec I.pos.x
     .endif
     invoke UpdateWindow, hWinMain
   .elseif wParam == VK_RIGHT
-    .if HeroPosX < MAP_SIZE - 1
-      inc HeroPosX
+    .if I.pos.x < MAP_SIZE - 1
+      inc I.pos.x
     .endif
     invoke UpdateWindow, hWinMain
   .else
@@ -88,12 +85,12 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke SelectObject, @hHeroDc, hBitmapHero
     
     invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, @hHeroDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-    mov eax, HeroPosX
+    mov eax, I.pos.x
     add eax, 6
     mov bx, BLOCK_SIZE
     mul bx
     push eax
-    mov eax, HeroPosY
+    mov eax, I.pos.y
     add eax, 1
     mul bx
     pop ebx

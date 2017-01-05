@@ -1,7 +1,7 @@
 ; module exports
 public hBitmapHero, hBitmapTile, hIcon, PreloadImages
 ; include
-include stdafx.inc
+include <stdafx.inc>
 
 .const
 ; filepath constant string
