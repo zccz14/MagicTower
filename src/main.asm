@@ -1,6 +1,5 @@
-
 include stdafx.inc
-
+include images.inc
 .data
 HeroPosX dd 0
 HeroPosY dd 0
@@ -11,14 +10,9 @@ HeroMoney dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
-hBitmapHero dd ?
-hBitmapTile dd ?
-hIcon dd ?
 hMenu dd ?
 .const
-szIcon db 'images\\icon.ico', 0
-szBitmapTile db 'images\\tile.bmp', 0
-szBitmapHero db 'images\\hero.bmp', 0
+
 szClassName db 'MainWindow', 0
 szMenuNewGame db '新游戏(&N)', 0
 szMenuQuit db '退出(&Q)', 0
@@ -26,16 +20,6 @@ szCaptionMain db '魔塔', 0
 szHeroHealth db '生命', 0
 szHeroAttack db '攻击力', 0
 .code
-
-PreloadImages proc
-    invoke LoadImage, NULL, addr szBitmapTile, IMAGE_BITMAP, 256, 1216, LR_LOADFROMFILE
-    mov hBitmapTile, eax
-    invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 128, 132, LR_LOADFROMFILE
-    mov hBitmapHero, eax
-    invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
-    mov hIcon, eax
-    ret
-PreloadImages endp
 
 
 ProcKeydown proc hWnd, uMsg, wParam, lParam
@@ -193,7 +177,7 @@ _WinMain endp
 
 
 __main proc
-  call PreloadImages
+  invoke PreloadImages
   invoke _WinMain
   invoke ExitProcess, 0
 __main endp
