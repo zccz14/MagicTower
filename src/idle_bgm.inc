@@ -1,1 +1,0 @@
-PlayIdleBGM proto hWnd: HWND, uMsg: UINT, idEvent: UINT, dwTime: DWORD
