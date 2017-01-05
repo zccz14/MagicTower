@@ -94,27 +94,11 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   .if eax == WM_PAINT
     invoke BeginPaint, hWnd, addr @stPs
     mov @hDc, eax
-    
-    ;invoke CreateCompatibleDC, @hDc
-    ;mov hDCTile, eax ; tile DC
-    ;invoke SelectObject, hDCTile, hBitmapTile
-    invoke CreateCompatibleDC, @hDc
-    mov @hBackDc, eax ; background DC
-    invoke CreateCompatibleBitmap, @hDc, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
-    mov @hBitmapBack, eax ; background Bitmap
-    invoke SelectObject, @hBackDc, @hBitmapBack
-    invoke ProcSetBackground, @hBackDc, hDCTile
-
-    invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, @hBackDc, 0, 0, SRCCOPY
-    invoke DeleteObject, @hBitmapBack
-    invoke DeleteDC, @hBackDc
-    invoke BitBlt, @hDc, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCWall, 0, 0, SRCCOPY
-    PrintHex eax
-    invoke CreateCompatibleDC, @hDc
-    mov @hHeroDc, eax
-    invoke SelectObject, @hHeroDc, hBitmapHero
-    ;invoke BitBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, SRCCOPY
+    ; draw background
+    invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, hDCBackground, 0, 0, SRCCOPY
+    ; avatar
     invoke TransparentBlt, @hDc, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
+    ; draw braver by position
     mov eax, I.pos.x
     add eax, 6
     mov bx, BLOCK_SIZE
@@ -125,9 +109,6 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     mul bx
     pop ebx
     invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-    ;invoke DeleteDC, @hHeroDc
-
-
     ;invoke DrawText, @hDc, addr szText, -1, addr @stRect, DT_SINGLELINE or DT_CENTER or DT_VCENTER
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_KEYDOWN

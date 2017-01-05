@@ -1,9 +1,10 @@
 ; module exports
 public hBitmapHero, hBitmapTile, hIcon
 public PreloadImages, PrepareDC
-public hDCTile, hDCFloor, hDCWall, hDCBraver
+public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground
 ; include
 include <stdafx.inc>
+include <background.inc>
 
 .const
 ; filepath constant string
@@ -20,6 +21,7 @@ hDCFloor dd ?
 hDCWall dd ?
 hDCBraver dd ?
 hDCHero dd ?
+hDCBackground dd ?
 
 .code
 PreloadImages proc
@@ -47,12 +49,16 @@ PrepareDC proc hWnd
     mov hDCHero, eax
     invoke SelectObject, hDCHero, hBitmapHero
     
-    invoke CreateCompatibleDC, NULL
+    invoke CreateCompatibleDC, @hDC
     mov hDCFloor, eax
+    invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
+    invoke SelectObject, hDCFloor, eax
     invoke BitBlt, hDCFloor, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 0, 0, SRCCOPY
     
-    invoke CreateCompatibleDC, NULL
+    invoke CreateCompatibleDC, @hDC
     mov hDCWall, eax
+    invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
+    invoke SelectObject, hDCWall, eax
     invoke BitBlt, hDCWall, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 6 * BLOCK_SIZE, 0, SRCCOPY
     
     invoke CreateCompatibleDC, @hDC
@@ -60,8 +66,13 @@ PrepareDC proc hWnd
     invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
     invoke SelectObject, hDCBraver, eax
     invoke BitBlt, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCHero, 0, 0, SRCCOPY
-    ; invoke TransparentBlt, hDCBraver, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, hDCHero, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-    
+
+    ; combine background
+    invoke CreateCompatibleDC, @hDC
+    mov hDCBackground, eax
+    invoke CreateCompatibleBitmap, @hDC, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE
+    invoke SelectObject, hDCBackground, eax
+    invoke ProcSetBackground, hDCBackground, hDCTile
     ret
 PrepareDC endp
 
