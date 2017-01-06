@@ -155,6 +155,33 @@ Touch proc hWnd, x, y
     invoke InvalidateRect, hWnd, addr @stRect, TRUE
     invoke UpdateWindow, hWnd
     mov @bRet, FALSE
+  .elseif ah == 2
+    ; items
+    .if eax == MAP_TYPE_ITEM_BOTTLE_RED
+      add I.HP, 50
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_BOTTLE_BLUE
+      add I.HP, 200
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_STONE_RED
+      add I.ATK, 1
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectATK, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_STONE_BLUE
+      add I.DEF, 1
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectDEF, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .endif
   .elseif ah == 1
     .if eax == MAP_TYPE_ENEMY_01
       dec I.HP
