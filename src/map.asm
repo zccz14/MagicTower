@@ -4,15 +4,15 @@ include <images.inc>
 
 .const
 constMap dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-         dd 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+         dd 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1
-         dd 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1
+         dd 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 1
          dd 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1
-         dd 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1
-         dd 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1
+         dd 1, 1, 2, 1, 1, 0, 1, 1, 1, 2, 1, 0, 1
+         dd 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 1
          dd 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1
-         dd 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1
-         dd 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 1, 1
+         dd 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1
+         dd 1, 0, 0, 0, 1, 1, 2, 1, 1, 1, 2, 1, 1
          dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
@@ -22,10 +22,21 @@ CachedIndex dd 0FFFFFFFFH
 
 .code
 MapToHDC proc lCode
-    .if lCode == 0
+    mov eax, lCode
+    .if eax == 0
         mov eax, hDCFloor
-    .elseif lCode == 1
+    .elseif eax == 1
         mov eax, hDCWall
+    .elseif eax == 2
+        mov eax, hDCYellowDoor
+    .elseif eax == 3
+        mov eax, hDCBlueDoor
+    .elseif eax == 4
+        mov eax, hDCRedDoor
+    .elseif eax == 5
+        mov eax, hDCUpstair
+    .elseif eax == 6
+        mov eax, hDCDownstair
     .endif
     ret
 MapToHDC endp

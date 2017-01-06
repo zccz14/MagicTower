@@ -2,6 +2,8 @@
 public hBitmapHero, hBitmapTile, hIcon
 public PreloadImages, PrepareDC
 public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground, hDCNumbers
+public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
+public hDCUpstair, hDCDownstair
 ; include
 include <stdafx.inc>
 include <background.inc>
@@ -23,6 +25,11 @@ hDCBraver dd ?
 hDCHero dd ?
 hDCBackground dd ?
 hDCNumbers dd 10 dup(?)
+hDCYellowDoor dd ?
+hDCBlueDoor dd ?
+hDCRedDoor dd ?
+hDCUpstair dd ?
+hDCDownstair dd ?
 
 .code
 PreloadImages proc
@@ -63,7 +70,7 @@ PrepareDC proc hWnd
     mov hDCFloor, eax
     invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
     invoke SelectObject, hDCFloor, eax
-    invoke BitBlt, hDCFloor, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 0, 0, SRCCOPY
+    invoke BitBlt, hDCFloor, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 3 * BLOCK_SIZE, BLOCK_SIZE, SRCCOPY
     
     invoke CreateCompatibleDC, @hDC
     mov hDCWall, eax
@@ -77,42 +84,39 @@ PrepareDC proc hWnd
     invoke SelectObject, hDCBraver, eax
     invoke BitBlt, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCHero, 0, 0, SRCCOPY
 
-    CreateHDC macro hpDC, x, y
+    CreateHDC macro hDC, x, y
         invoke CreateCompatibleDC, @hDC
-        mov [hpDC], eax
+        mov hDC, eax
         invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
-        invoke SelectObject, [hpDC], eax
-        invoke BitBlt, [hpDC], 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, x * BLOCK_SIZE, y * BLOCK_SIZE, SRCCOPY
+        invoke SelectObject, hDC, eax
+        invoke BitBlt, hDC, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, x * BLOCK_SIZE, y * BLOCK_SIZE, SRCCOPY
     endm
     lea esi, hDCNumbers
-    CreateHDC esi, 1, 23
+    CreateHDC [esi], 1, 23
     add esi, 4
-    CreateHDC esi, 2, 23
+    CreateHDC [esi], 2, 23
     add esi, 4
-    CreateHDC esi, 3, 23
+    CreateHDC [esi], 3, 23
     add esi, 4
-    CreateHDC esi, 4, 23
+    CreateHDC [esi], 4, 23
     add esi, 4
-    CreateHDC esi, 5, 23
+    CreateHDC [esi], 5, 23
     add esi, 4
-    CreateHDC esi, 1, 24
+    CreateHDC [esi], 1, 24
     add esi, 4
-    CreateHDC esi, 2, 24
+    CreateHDC [esi], 2, 24
     add esi, 4
-    CreateHDC esi, 3, 24
+    CreateHDC [esi], 3, 24
     add esi, 4
-    CreateHDC esi, 4, 24
+    CreateHDC [esi], 4, 24
     add esi, 4
-    CreateHDC esi, 5, 24
-    ; CreateHDCNumbers 1, 2, 23
-    ; CreateHDCNumbers 2, 3, 23
-    ; CreateHDCNumbers 3, 4, 23
-    ; CreateHDCNumbers 4, 5, 23
-    ; CreateHDCNumbers 5, 1, 24
-    ; CreateHDCNumbers 6, 2, 24
-    ; CreateHDCNumbers 7, 3, 24
-    ; CreateHDCNumbers 8, 4, 24
-    ; CreateHDCNumbers 9, 5, 24
+    CreateHDC [esi], 5, 24
+
+    CreateHDC hDCYellowDoor, 0, 30
+    CreateHDC hDCBlueDoor, 1, 30
+    CreateHDC hDCRedDoor, 2, 30
+    CreateHDC hDCUpstair, 1, 31
+    CreateHDC hDCDownstair, 0, 31
 
     ; combine background
     invoke CreateCompatibleDC, @hDC

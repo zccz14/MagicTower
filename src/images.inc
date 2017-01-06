@@ -7,6 +7,11 @@ extrn hDCWall: HDC
 extrn hDCBraver: HDC
 extrn hDCBackground: HDC
 extrn hDCNumbers: ptr HDC
+extrn hDCYellowDoor: HDC
+extrn hDCBlueDoor: HDC
+extrn hDCRedDoor: HDC
+extrn hDCUpstair: HDC
+extrn hDCDownstair: HDC
 
 PreloadImages proto
 PrepareDC proto hWnd: HWND

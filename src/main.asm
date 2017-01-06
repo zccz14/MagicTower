@@ -137,7 +137,7 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
 
     invoke GetMapDC, hWnd, 0
     PrintHex eax
-    invoke BitBlt, @hDc, 6 * BLOCK_SIZE, BLOCK_SIZE, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, eax, 0, 0, SRCCOPY
+    invoke TransparentBlt, @hDc, 6 * BLOCK_SIZE, BLOCK_SIZE, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, eax, 0, 0, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, 0FFFFFFh
 
     invoke crt_sprintf, addr szText, addr szHeroHealth, I.HP
     invoke DrawText, @hDc, addr szText, -1, addr stRectHP, DT_SINGLELINE or DT_CENTER or DT_VCENTER
