@@ -56,6 +56,35 @@ GetBlockRect proc x, y, pstRect
   ret
 GetBlockRect endp
 
+Battle proc HP, ATK, DEF, MON
+  mov eax, I.ATK
+  .if eax <= DEF
+    mov eax, 0
+    ret
+  .endif
+  sub eax, DEF
+  mov ebx, eax
+  mov eax, HP
+  mov edx, 0
+  div ebx
+  .if edx == 0
+    dec eax
+  .endif
+  mov ebx, eax
+  mov eax, ATK
+  sub eax, I.DEF
+  mul ebx
+  .if I.HP <= eax
+    mov eax, 0
+    ret
+  .endif
+  sub I.HP, eax
+  mov eax, MON
+  add I.MON, eax
+  mov eax, 1
+  ret
+Battle endp
+
 ; @returns {Boolean} 1 for accessible, 0 for wait
 Touch proc hWnd, x, y
   local @stRect: RECT
@@ -184,13 +213,31 @@ Touch proc hWnd, x, y
     .endif
   .elseif ah == 1
     .if eax == MAP_TYPE_ENEMY_01
-      dec I.HP
-      inc I.MON
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
-      invoke InvalidateRect, hWnd, addr stRectHP, TRUE
-      invoke InvalidateRect, hWnd, addr stRectMoney, TRUE
-      invoke UpdateWindow, hWnd
+      invoke Battle, 35, 18, 1, 1
+    .elseif eax == MAP_TYPE_ENEMY_02
+      invoke Battle, 45, 20, 2, 2
+    .elseif eax == MAP_TYPE_ENEMY_03
+      invoke Battle, 35, 38, 3, 3
+    .elseif eax == MAP_TYPE_ENEMY_04
+      invoke Battle, 60, 32, 8, 5
+    .elseif eax == MAP_TYPE_ENEMY_05
+      invoke Battle, 50, 42, 6, 6
+    .elseif eax == MAP_TYPE_ENEMY_06
+      invoke Battle, 55, 52, 12, 8
+    .else
+      PrintText 'Î´ÖªµÐÈË'
+      mov eax, 0
+      ret
     .endif
+    .if eax == 0
+      ; failed
+      mov eax, 0
+      ret
+    .endif
+    invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+    invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+    invoke InvalidateRect, hWnd, addr stRectMoney, TRUE
+    invoke UpdateWindow, hWnd
     mov @bRet, TRUE
   .else
     mov @bRet, FALSE
