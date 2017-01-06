@@ -6,6 +6,9 @@ public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
 public hDCUpstair, hDCDownstair
 public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 
+; public items
+public hDCBottleRed, hDCBottleBlue, hDCStoneRed, hDCStoneBlue
+
 public hDCEnemy01, hDCEnemy02, hDCEnemy03, hDCEnemy04
 public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08
 ; include
@@ -17,7 +20,7 @@ include <background.inc>
 szIcon db 'images\\icon.ico', 0
 szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
-szBitmapItem01 db 'images\\item01.bmp', 0
+szBitmapItem db 'images\\item.bmp', 0
 szBitmapMap db 'images\\map.bmp', 0
 szBitmapEnemies db 'images\\enemies.bmp', 0
 
@@ -25,13 +28,14 @@ szBitmapEnemies db 'images\\enemies.bmp', 0
 hIcon dd ?
 hBitmapHero dd ?
 hBitmapTile dd ?
-hBitmapItem01 dd ?
+hBitmapItem dd ?
 hBitmapMap dd ?
 hBitmapEnemies dd ?
 
 hDCMap dd ?
 hDCTile dd ?
 hDCEnemies dd ?
+hDCItem dd ?
 
 hDCFloor dd ?
 hDCWall dd ?
@@ -47,6 +51,11 @@ hDCDownstair dd ?
 hDCKeyYellow dd ?
 hDCKeyBlue dd ?
 hDCKeyRed dd ?
+; items
+hDCBottleRed dd ?
+hDCBottleBlue dd ?
+hDCStoneRed dd ?
+hDCStoneBlue dd ?
 
 ; enemies
 hDCEnemy01 dd ?
@@ -67,8 +76,8 @@ PreloadImages proc
     mov hBitmapTile, eax
     invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 128, 132, LR_LOADFROMFILE
     mov hBitmapHero, eax
-    invoke LoadImage, NULL, addr szBitmapItem01, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
-    mov hBitmapItem01, eax
+    invoke LoadImage, NULL, addr szBitmapItem, IMAGE_BITMAP, 128, 32, LR_LOADFROMFILE
+    mov hBitmapItem, eax
     invoke LoadImage, NULL, addr szBitmapMap, IMAGE_BITMAP, 256, 128, LR_LOADFROMFILE
     mov hBitmapMap, eax
     invoke LoadImage, NULL, addr szBitmapEnemies, IMAGE_BITMAP, 128, 512, LR_LOADFROMFILE
@@ -98,6 +107,10 @@ PrepareDC proc hWnd
     invoke CreateCompatibleDC, NULL
     mov hDCHero, eax
     invoke SelectObject, hDCHero, hBitmapHero
+
+    invoke CreateCompatibleDC, NULL
+    mov hDCItem, eax
+    invoke SelectObject, hDCItem, hBitmapItem
 
     invoke CreateCompatibleDC, NULL
     mov hDCMap, eax
@@ -148,6 +161,11 @@ PrepareDC proc hWnd
     SelectBlock hDCKeyYellow, hDCMap, 5, 1
     SelectBlock hDCKeyBlue, hDCMap, 6, 1
     SelectBlock hDCKeyRed, hDCMap, 7, 1
+
+    SelectBlock hDCStoneRed, hDCItem, 0, 0
+    SelectBlock hDCStoneBlue, hDCItem, 1, 0
+    SelectBlock hDCBottleRed, hDCItem, 2, 0
+    SelectBlock hDCBottleBlue, hDCItem, 3, 0
 
     SelectBlock hDCEnemy01, hDCEnemies, 0, 0
     SelectBlock hDCEnemy02, hDCEnemies, 0, 1

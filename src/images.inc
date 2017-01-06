@@ -17,6 +17,11 @@ extrn hDCKeyYellow: HDC
 extrn hDCKeyBlue: HDC
 extrn hDCKeyRed: HDC
 
+extrn hDCStoneRed: HDC
+extrn hDCStoneBlue: HDC
+extrn hDCBottleRed: HDC
+extrn hDCBottleBlue: HDC
+
 extrn hDCEnemy01: HDC
 extrn hDCEnemy02: HDC
 extrn hDCEnemy03: HDC
