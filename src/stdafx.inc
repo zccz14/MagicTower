@@ -53,3 +53,15 @@ mLet macro x, y
     mov eax, y
     mov x, eax
 endm
+
+; Map::Type::
+MAP_TYPE_PATH equ 0
+MAP_TYPE_WALL equ 1
+MAP_TYPE_DOOR_YELLOW equ 2
+MAP_TYPE_DOOR_BLUE equ 3
+MAP_TYPE_DOOR_RED equ 4
+MAP_TYPE_UPSTAIR equ 5
+MAP_TYPE_DOWNSTAIR equ 6
+MAP_TYPE_KEY_YELLOW equ 7
+MAP_TYPE_KEY_BLUE equ 8
+MAP_TYPE_KEY_RED equ 9

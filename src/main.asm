@@ -71,12 +71,12 @@ Touch proc hWnd, x, y
     ret
   .endif
   invoke GetBlock, I.pos.z, x, y
-  .if eax == 0
+  .if eax == MAP_TYPE_PATH
     mov @bRet, TRUE
-  .elseif eax == 2
+  .elseif eax == MAP_TYPE_DOOR_YELLOW
     ; touch yellow door
     .if I.yellow > 0
-      invoke SetBlock, x, y, I.pos.z, 0; open the door
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
       dec I.yellow
       invoke InvalidateRect, hWnd, addr @stRect, TRUE
       invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
@@ -84,10 +84,10 @@ Touch proc hWnd, x, y
       invoke PlayOnDoor
     .endif
     mov @bRet, FALSE
-  .elseif eax == 3
+  .elseif eax == MAP_TYPE_DOOR_BLUE
     ; touch blue door
     .if I.blue > 0
-      invoke SetBlock, x, y, I.pos.z, 0; open the door
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
       dec I.blue
       invoke InvalidateRect, hWnd, addr @stRect, TRUE
       invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
@@ -95,10 +95,10 @@ Touch proc hWnd, x, y
       invoke PlayOnDoor
     .endif
     mov @bRet, FALSE
-  .elseif eax == 4
+  .elseif eax == MAP_TYPE_DOOR_RED
     ; touch red door
     .if I.red > 0
-      invoke SetBlock, x, y, I.pos.z, 0; open the door
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
       dec I.red
       invoke InvalidateRect, hWnd, addr @stRect, TRUE
       invoke InvalidateRect, hWnd, addr stRectRed, TRUE

@@ -44,10 +44,10 @@ CachedIndex dd CACHE_INVALID
 ; public void Map::Init();
 ; Copy Map from the const
 MapInit proc uses eax ecx esi edi
+    PrintText 'Map Initialization'
     mov ecx, FLOOR_CNT * 13 * 13
     mov esi, offset Floor0
     mov edi, offset State
-    DumpMem offset State, 16
     .while ecx
         mov eax, [esi]
         mov [edi], eax
@@ -55,25 +55,24 @@ MapInit proc uses eax ecx esi edi
         add edi, 4
         dec ecx
     .endw
-    DumpMem offset State, 16
     ret
 MapInit endp
 
 MapToHDC proc lCode
     mov eax, lCode
-    .if eax == 0
+    .if eax == MAP_TYPE_PATH
         mov eax, hDCFloor
-    .elseif eax == 1
+    .elseif eax == MAP_TYPE_WALL
         mov eax, hDCWall
-    .elseif eax == 2
+    .elseif eax == MAP_TYPE_DOOR_YELLOW
         mov eax, hDCYellowDoor
-    .elseif eax == 3
+    .elseif eax == MAP_TYPE_DOOR_BLUE
         mov eax, hDCBlueDoor
-    .elseif eax == 4
+    .elseif eax == MAP_TYPE_DOOR_RED
         mov eax, hDCRedDoor
-    .elseif eax == 5
+    .elseif eax == MAP_TYPE_UPSTAIR
         mov eax, hDCUpstair
-    .elseif eax == 6
+    .elseif eax == MAP_TYPE_DOWNSTAIR
         mov eax, hDCDownstair
     .endif
     ret
@@ -97,7 +96,6 @@ GetMapDC proc hWnd, index
         ret
     .endif
     ; Cache Miss
-    PrintHex 0DEADBEAFH, 'Cache Miss'
     invoke DeleteObject, hDCCached
 
     invoke GetDC, hWnd
