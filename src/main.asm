@@ -22,12 +22,19 @@ szHeroHealth db 'ÉúÃü£º%d', 0
 szHeroAttack db '¹¥»÷Á¦£º%d', 0
 szHeroDEF db '·ÀÓùÁ¦£º%d', 0
 szHeroMoney db '½ð±Ò£º%d', 0
+szKeyYellow db '»ÆÔ¿³×£º%d', 0
+szKeyBlue db 'À¶Ô¿³×£º%d', 0
+szKeyRed db 'ºìÔ¿³×£º%d', 0
 
 stRectFloor RECT <2 * BLOCK_SIZE, BLOCK_SIZE, 4 * BLOCK_SIZE, 2 * BLOCK_SIZE>
 stRectHP RECT <1 * BLOCK_SIZE, 3 * BLOCK_SIZE, 4 * BLOCK_SIZE, 4 * BLOCK_SIZE>
 stRectATK RECT <1 * BLOCK_SIZE, 4 * BLOCK_SIZE, 4 * BLOCK_SIZE, 5 * BLOCK_SIZE>
 stRectDEF RECT <1 * BLOCK_SIZE, 5 * BLOCK_SIZE, 4 * BLOCK_SIZE, 6 * BLOCK_SIZE>
 stRectMoney RECT <1 * BLOCK_SIZE, 6 * BLOCK_SIZE, 4 * BLOCK_SIZE, 7 * BLOCK_SIZE>
+stRectYellow RECT <1 * BLOCK_SIZE, 7 * BLOCK_SIZE, 4 * BLOCK_SIZE, 8 * BLOCK_SIZE>
+stRectBlue RECT <1 * BLOCK_SIZE, 8 * BLOCK_SIZE, 4 * BLOCK_SIZE, 9 * BLOCK_SIZE>
+stRectRed RECT <1 * BLOCK_SIZE, 9 * BLOCK_SIZE, 4 * BLOCK_SIZE, 10 * BLOCK_SIZE>
+
 .code
 
 GetBlockRect proc x, y, pstRect
@@ -58,7 +65,6 @@ Touch proc hWnd, x, y
     invoke InvalidateRect, hWnd, addr stRectFloor, TRUE
     invoke InvalidateRect, hWnd, addr stRectHP, TRUE
     invoke UpdateWindow, hWnd
-    PrintHex I.pos.z
     mov eax, 0
     ret
   .endif
@@ -67,6 +73,18 @@ Touch proc hWnd, x, y
     mov eax, 1
     ret
   .endif
+  ; touch yellow door
+  .if eax == 2
+    .if I.yellow > 0
+      dec I.yellow
+      invoke SetBlock, x, y, I.pos.z, 0
+      invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
+      invoke UpdateWindow, hWnd
+      mov eax, 1
+      ret
+    .endif
+  .endif
+
   mov eax, 0
   ret
 Touch endp
@@ -131,8 +149,6 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     div ebx
     shl eax, 2
     shl edx, 2
-    PrintHex eax
-    PrintHex edx
     push edx
     mov ebx, eax
     invoke TransparentBlt, @hDc, 2 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, [esi + ebx], 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
@@ -140,8 +156,7 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke TransparentBlt, @hDc, 3 * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE, [esi + ebx], 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
     assume esi: nothing
 
-    invoke GetMapDC, hWnd, 0
-    PrintHex eax
+    invoke GetMapDC, hWnd, I.pos.z
     invoke TransparentBlt, @hDc, 6 * BLOCK_SIZE, BLOCK_SIZE, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, eax, 0, 0, 13 * BLOCK_SIZE, 13 * BLOCK_SIZE, 0FFFFFFh
 
     invoke crt_sprintf, addr szText, addr szHeroHealth, I.HP
@@ -152,6 +167,13 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke DrawText, @hDc, addr szText, -1, addr stRectDEF, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
     invoke crt_sprintf, addr szText, addr szHeroMoney, I.MON
     invoke DrawText, @hDc, addr szText, -1, addr stRectMoney, DT_SINGLELINE or DT_CENTER or DT_VCENTER    
+    invoke crt_sprintf, addr szText, addr szKeyYellow, I.yellow
+    invoke DrawText, @hDc, addr szText, -1, addr stRectYellow, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+    invoke crt_sprintf, addr szText, addr szKeyBlue, I.blue
+    invoke DrawText, @hDc, addr szText, -1, addr stRectBlue, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+    invoke crt_sprintf, addr szText, addr szKeyRed, I.red
+    invoke DrawText, @hDc, addr szText, -1, addr stRectRed, DT_SINGLELINE or DT_CENTER or DT_VCENTER
+
     ; draw braver by position
     mov eax, I.pos.x
     add eax, 6
@@ -241,6 +263,7 @@ _WinMain endp
 
 __main proc
   PrintLine
+  invoke MapInit
   invoke PreloadImages
   invoke _WinMain
   invoke ExitProcess, 0

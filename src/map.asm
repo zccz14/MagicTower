@@ -1,9 +1,12 @@
-public GetMap, GetMapDC, GetBlock
+public GetMapDC, GetBlock, SetBlock
+public MapInit
 include <stdafx.inc>
 include <images.inc>
 
+FLOOR_CNT equ 2
+CACHE_INVALID equ 0FFFFFFFFH
 .const
-constMap dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+Floor0   dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
          dd 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1
          dd 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 1
@@ -30,11 +33,32 @@ Floor1   dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
          dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 
+.data?
+State dd FLOOR_CNT * 13 * 13 dup(?)
+
 .data
 hDCCached dd 0
-CachedIndex dd 0FFFFFFFFH
+CachedIndex dd CACHE_INVALID
 
 .code
+; public void Map::Init();
+; Copy Map from the const
+MapInit proc uses eax ecx esi edi
+    mov ecx, FLOOR_CNT * 13 * 13
+    mov esi, offset Floor0
+    mov edi, offset State
+    DumpMem offset State, 16
+    .while ecx
+        mov eax, [esi]
+        mov [edi], eax
+        add esi, 4
+        add edi, 4
+        dec ecx
+    .endw
+    DumpMem offset State, 16
+    ret
+MapInit endp
+
 MapToHDC proc lCode
     mov eax, lCode
     .if eax == 0
@@ -59,23 +83,9 @@ GetOffsetByIndex proc uses ebx index
     mov ebx, 13 * 13 * 4
     mov eax, index
     mul ebx
-    add eax, offset constMap
+    add eax, offset State
     ret
 GetOffsetByIndex endp
-
-GetMap proc pMap, index
-    mov ecx, 13 * 13
-    assume esi: ptr dword
-    assume edi: ptr dword
-    invoke GetOffsetByIndex, index
-    mov esi, eax
-    mov edi, pMap
-    .while ecx
-        mLet [edi], [esi]
-        dec ecx
-    .endw
-    ret
-GetMap endp
 
 GetMapDC proc hWnd, index
     local @hDC: HDC
@@ -87,6 +97,7 @@ GetMapDC proc hWnd, index
         ret
     .endif
     ; Cache Miss
+    PrintHex 0DEADBEAFH, 'Cache Miss'
     invoke DeleteObject, hDCCached
 
     invoke GetDC, hWnd
@@ -137,5 +148,21 @@ GetBlock proc uses ebx esi index, x, y
     mov eax, [esi]
     ret
 GetBlock endp
+
+; void SetBlock(uint x, uint y, uint z, uint val);
+SetBlock proc uses eax ebx esi x, y, z, val
+    mov CachedIndex, CACHE_INVALID
+    invoke GetOffsetByIndex, z
+    mov esi, eax
+    mov eax, y
+    mov ebx, 13
+    mul ebx
+    add eax, x
+    shl eax, 2
+    add esi, eax
+    mov eax, val
+    mov [esi], eax
+    ret
+SetBlock endp
 
 end

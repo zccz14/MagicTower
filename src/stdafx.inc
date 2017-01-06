@@ -44,6 +44,9 @@ Braver struct
     DEF dword 100
     MON dword 0
     pos Position <>
+    yellow dword 0
+    blue word 0
+    red word 0
 Braver ends
 
 mLet macro x, y
