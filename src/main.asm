@@ -252,6 +252,8 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @lNewY
   mLet @lNewX, I.pos.x
   mLet @lNewY, I.pos.y
+  PrintHex wParam
+  PrintHex lParam
   .if wParam == VK_UP
     dec @lNewY
   .elseif wParam == VK_DOWN
@@ -260,6 +262,14 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
     dec @lNewX
   .elseif wParam == VK_RIGHT
     inc @lNewX
+  .elseif wParam == 52H
+    ; restart game
+    invoke MapInit
+    invoke BraverInit
+    invoke GetClientRect, hWnd, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    invoke UpdateWindow, hWnd
+    ret
   .else
     ret
   .endif
