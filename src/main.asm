@@ -49,9 +49,9 @@ GetBlockRect proc x, y, pstRect
   ret
 GetBlockRect endp
 
+; @returns {Boolean} 1 for accessible, 0 for wait
 Touch proc hWnd, x, y
   local @stRect: RECT
-  xor eax, eax
   .if x > MAP_SIZE - 1 || y > MAP_SIZE - 1
     inc I.pos.z
     dec I.HP
@@ -59,10 +59,15 @@ Touch proc hWnd, x, y
     invoke InvalidateRect, hWnd, addr stRectHP, TRUE
     invoke UpdateWindow, hWnd
     PrintHex I.pos.z
-    xor eax, eax
+    mov eax, 0
     ret
   .endif
-  mov eax, 1
+  invoke GetBlock, I.pos.z, x, y
+  .if eax == 0
+    mov eax, 1
+    ret
+  .endif
+  mov eax, 0
   ret
 Touch endp
 

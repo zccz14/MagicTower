@@ -1,4 +1,4 @@
-public GetMap, GetMapDC
+public GetMap, GetMapDC, GetBlock
 include <stdafx.inc>
 include <images.inc>
 
@@ -16,6 +16,20 @@ constMap dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
          dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+Floor1   dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+         dd 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+         dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1
+         dd 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 1
+         dd 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1
+         dd 1, 1, 2, 1, 1, 0, 1, 1, 1, 2, 1, 0, 1
+         dd 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 1
+         dd 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1
+         dd 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1
+         dd 1, 0, 0, 0, 1, 1, 2, 1, 1, 1, 2, 1, 1
+         dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
+         dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
+         dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
 .data
 hDCCached dd 0
 CachedIndex dd 0FFFFFFFFH
@@ -110,5 +124,18 @@ GetMapDC proc hWnd, index
     mLet hDCCached, @hDCRet
     ret
 GetMapDC endp    
+
+GetBlock proc uses ebx esi index, x, y
+    invoke GetOffsetByIndex, index
+    mov esi, eax
+    mov eax, y
+    mov ebx, 13
+    mul ebx
+    add eax, x
+    shl eax, 2
+    add esi, eax
+    mov eax, [esi]
+    ret
+GetBlock endp
 
 end
