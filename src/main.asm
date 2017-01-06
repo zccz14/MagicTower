@@ -59,6 +59,7 @@ GetBlockRect endp
 ; @returns {Boolean} 1 for accessible, 0 for wait
 Touch proc hWnd, x, y
   local @stRect: RECT
+  local @bRet: BOOL
   .if x > MAP_SIZE - 1 || y > MAP_SIZE - 1
     inc I.pos.z
     dec I.HP
@@ -70,22 +71,44 @@ Touch proc hWnd, x, y
   .endif
   invoke GetBlock, I.pos.z, x, y
   .if eax == 0
-    mov eax, 1
-    ret
-  .endif
-  ; touch yellow door
-  .if eax == 2
+    mov @bRet, TRUE
+  .elseif eax == 2
+    ; touch yellow door
     .if I.yellow > 0
+      invoke SetBlock, x, y, I.pos.z, 0; open the door
       dec I.yellow
-      invoke SetBlock, x, y, I.pos.z, 0
       invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
       invoke UpdateWindow, hWnd
-      mov eax, 1
-      ret
+      mov @bRet, TRUE
+    .else
+      mov @bRet, FALSE
     .endif
+  .elseif eax == 3
+    ; touch blue door
+    .if I.blue > 0
+      invoke SetBlock, x, y, I.pos.z, 0; open the door
+      dec I.blue
+      invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .else
+      mov @bRet, FALSE
+    .endif
+  .elseif eax == 4
+    ; touch red door
+    .if I.red > 0
+      invoke SetBlock, x, y, I.pos.z, 0; open the door
+      dec I.red
+      invoke InvalidateRect, hWnd, addr stRectRed, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, TRUE
+    .else
+      mov @bRet, FALSE
+    .endif
+  .else
+    mov @bRet, FALSE
   .endif
-
-  mov eax, 0
+  mov eax, @bRet
   ret
 Touch endp
 
