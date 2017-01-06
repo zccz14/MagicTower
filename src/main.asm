@@ -62,11 +62,6 @@ Touch proc hWnd, x, y
   local @bRet: BOOL
   invoke GetBlockRect, x, y, addr @stRect
   .if x > MAP_SIZE - 1 || y > MAP_SIZE - 1
-    inc I.pos.z
-    dec I.HP
-    invoke InvalidateRect, hWnd, addr stRectFloor, TRUE
-    invoke InvalidateRect, hWnd, addr stRectHP, TRUE
-    invoke UpdateWindow, hWnd
     mov eax, 0
     ret
   .endif
@@ -129,6 +124,46 @@ Touch proc hWnd, x, y
     invoke UpdateWindow, hWnd
     invoke PlayOnItem
     PrintText '你获得了一个红钥匙'
+    mov @bRet, TRUE
+  .elseif eax == MAP_TYPE_UPSTAIR
+    assume esi: ptr Position
+    mov esi, offset PosUp
+    mov eax, I.pos.z
+    mov ebx, sizeof Position
+    mul ebx
+    add esi, eax
+    mLet I.pos.x, [esi].x
+    mLet I.pos.y, [esi].y
+    mLet I.pos.z, [esi].z
+    assume esi: nothing
+    invoke GetClientRect, hWnd, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    invoke UpdateWindow, hWnd
+    mov @bRet, FALSE
+  .elseif eax == MAP_TYPE_DOWNSTAIR
+    assume esi: ptr Position
+    mov esi, offset PosDown
+    mov eax, I.pos.z
+    mov ebx, sizeof Position
+    mul ebx
+    add esi, eax
+    mLet I.pos.x, [esi].x
+    mLet I.pos.y, [esi].y
+    mLet I.pos.z, [esi].z
+    assume esi: nothing
+    invoke GetClientRect, hWnd, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    invoke UpdateWindow, hWnd
+    mov @bRet, FALSE
+  .elseif ah == 1
+    .if eax == MAP_TYPE_ENEMY_01
+      dec I.HP
+      inc I.MON
+      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+      invoke InvalidateRect, hWnd, addr stRectMoney, TRUE
+      invoke UpdateWindow, hWnd
+    .endif
     mov @bRet, TRUE
   .else
     mov @bRet, FALSE

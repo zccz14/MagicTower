@@ -17,5 +17,14 @@ extrn hDCKeyYellow: HDC
 extrn hDCKeyBlue: HDC
 extrn hDCKeyRed: HDC
 
+extrn hDCEnemy01: HDC
+extrn hDCEnemy02: HDC
+extrn hDCEnemy03: HDC
+extrn hDCEnemy04: HDC
+extrn hDCEnemy05: HDC
+extrn hDCEnemy06: HDC
+extrn hDCEnemy07: HDC
+extrn hDCEnemy08: HDC
+
 PreloadImages proto
 PrepareDC proto hWnd: HWND

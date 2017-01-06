@@ -5,6 +5,9 @@ public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground, hDCNumbers
 public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
 public hDCUpstair, hDCDownstair
 public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
+
+public hDCEnemy01, hDCEnemy02, hDCEnemy03, hDCEnemy04
+public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08
 ; include
 include <stdafx.inc>
 include <background.inc>
@@ -16,6 +19,7 @@ szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
 szBitmapItem01 db 'images\\item01.bmp', 0
 szBitmapMap db 'images\\map.bmp', 0
+szBitmapEnemies db 'images\\enemies.bmp', 0
 
 .data?
 hIcon dd ?
@@ -23,9 +27,12 @@ hBitmapHero dd ?
 hBitmapTile dd ?
 hBitmapItem01 dd ?
 hBitmapMap dd ?
+hBitmapEnemies dd ?
 
 hDCMap dd ?
 hDCTile dd ?
+hDCEnemies dd ?
+
 hDCFloor dd ?
 hDCWall dd ?
 hDCBraver dd ?
@@ -41,6 +48,16 @@ hDCKeyYellow dd ?
 hDCKeyBlue dd ?
 hDCKeyRed dd ?
 
+; enemies
+hDCEnemy01 dd ?
+hDCEnemy02 dd ?
+hDCEnemy03 dd ?
+hDCEnemy04 dd ?
+hDCEnemy05 dd ?
+hDCEnemy06 dd ?
+hDCEnemy07 dd ?
+hDCEnemy08 dd ?
+
 .code
 PreloadImages proc
     local @hDC: HDC
@@ -54,6 +71,8 @@ PreloadImages proc
     mov hBitmapItem01, eax
     invoke LoadImage, NULL, addr szBitmapMap, IMAGE_BITMAP, 256, 128, LR_LOADFROMFILE
     mov hBitmapMap, eax
+    invoke LoadImage, NULL, addr szBitmapEnemies, IMAGE_BITMAP, 128, 512, LR_LOADFROMFILE
+    mov hBitmapEnemies, eax
     ret
 PreloadImages endp
 
@@ -83,6 +102,11 @@ PrepareDC proc hWnd
     invoke CreateCompatibleDC, NULL
     mov hDCMap, eax
     invoke SelectObject, hDCMap, hBitmapMap
+
+    invoke CreateCompatibleDC, NULL
+    mov hDCEnemies, eax
+    invoke SelectObject, hDCEnemies, hBitmapEnemies
+
     ; Create Block size DC and Select from Other DC
     SelectBlock macro hDCChild, hDCParent, x, y
         invoke CreateCompatibleDC, @hDC
@@ -124,6 +148,13 @@ PrepareDC proc hWnd
     SelectBlock hDCKeyYellow, hDCMap, 5, 1
     SelectBlock hDCKeyBlue, hDCMap, 6, 1
     SelectBlock hDCKeyRed, hDCMap, 7, 1
+
+    SelectBlock hDCEnemy01, hDCEnemies, 0, 0
+    SelectBlock hDCEnemy02, hDCEnemies, 0, 1
+    SelectBlock hDCEnemy03, hDCEnemies, 0, 4
+    SelectBlock hDCEnemy04, hDCEnemies, 0, 8
+    SelectBlock hDCEnemy05, hDCEnemies, 0, 12
+    SelectBlock hDCEnemy06, hDCEnemies, 0, 13
 
     invoke DeleteObject, hDCMap
 
