@@ -13,5 +13,9 @@ extrn hDCRedDoor: HDC
 extrn hDCUpstair: HDC
 extrn hDCDownstair: HDC
 
+extrn hDCKeyYellow: HDC
+extrn hDCKeyBlue: HDC
+extrn hDCKeyRed: HDC
+
 PreloadImages proto
 PrepareDC proto hWnd: HWND

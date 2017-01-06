@@ -22,15 +22,15 @@ Floor0   dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 Floor1   dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
          dd 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1
-         dd 1, 0, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 1
+         dd 1, 0, 0, 0, 2, 0, 1, 0, 7, 0, 1, 0, 1
          dd 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1
          dd 1, 1, 2, 1, 1, 0, 1, 1, 1, 2, 1, 0, 1
-         dd 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 1
+         dd 1, 7, 0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 1
          dd 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1
-         dd 1, 1, 2, 1, 1, 0, 0, 0, 0, 3, 4, 0, 1
+         dd 1, 1, 2, 1, 1, 0, 0, 8, 9, 3, 4, 0, 1
          dd 1, 0, 0, 0, 1, 1, 2, 1, 1, 1, 2, 1, 1
-         dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
-         dd 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1
+         dd 1, 0, 0, 7, 1, 7, 0, 0, 1, 0, 0, 0, 1
+         dd 1, 0, 0, 7, 1, 0, 0, 0, 1, 0, 0, 0, 1
          dd 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 
 .data?
@@ -74,6 +74,12 @@ MapToHDC proc lCode
         mov eax, hDCUpstair
     .elseif eax == MAP_TYPE_DOWNSTAIR
         mov eax, hDCDownstair
+    .elseif eax == MAP_TYPE_KEY_YELLOW
+        mov eax, hDCKeyYellow
+    .elseif eax == MAP_TYPE_KEY_BLUE
+        mov eax, hDCKeyBlue
+    .elseif eax == MAP_TYPE_KEY_RED
+        mov eax, hDCKeyRed
     .endif
     ret
 MapToHDC endp

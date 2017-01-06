@@ -4,6 +4,7 @@ public PreloadImages, PrepareDC
 public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground, hDCNumbers
 public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
 public hDCUpstair, hDCDownstair
+public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 ; include
 include <stdafx.inc>
 include <background.inc>
@@ -13,11 +14,17 @@ include <background.inc>
 szIcon db 'images\\icon.ico', 0
 szBitmapTile db 'images\\tile.bmp', 0
 szBitmapHero db 'images\\hero.bmp', 0
+szBitmapItem01 db 'images\\item01.bmp', 0
+szBitmapMap db 'images\\map.bmp', 0
 
 .data?
+hIcon dd ?
 hBitmapHero dd ?
 hBitmapTile dd ?
-hIcon dd ?
+hBitmapItem01 dd ?
+hBitmapMap dd ?
+
+hDCMap dd ?
 hDCTile dd ?
 hDCFloor dd ?
 hDCWall dd ?
@@ -30,16 +37,23 @@ hDCBlueDoor dd ?
 hDCRedDoor dd ?
 hDCUpstair dd ?
 hDCDownstair dd ?
+hDCKeyYellow dd ?
+hDCKeyBlue dd ?
+hDCKeyRed dd ?
 
 .code
 PreloadImages proc
     local @hDC: HDC
+    invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
+    mov hIcon, eax
     invoke LoadImage, NULL, addr szBitmapTile, IMAGE_BITMAP, 256, 1216, LR_LOADFROMFILE
     mov hBitmapTile, eax
     invoke LoadImage, NULL, addr szBitmapHero, IMAGE_BITMAP, 128, 132, LR_LOADFROMFILE
     mov hBitmapHero, eax
-    invoke LoadImage, NULL, addr szIcon, IMAGE_ICON, 16, 16, LR_LOADFROMFILE
-    mov hIcon, eax
+    invoke LoadImage, NULL, addr szBitmapItem01, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
+    mov hBitmapItem01, eax
+    invoke LoadImage, NULL, addr szBitmapMap, IMAGE_BITMAP, 256, 128, LR_LOADFROMFILE
+    mov hBitmapMap, eax
     ret
 PreloadImages endp
 
@@ -65,58 +79,53 @@ PrepareDC proc hWnd
     invoke CreateCompatibleDC, NULL
     mov hDCHero, eax
     invoke SelectObject, hDCHero, hBitmapHero
-    
-    invoke CreateCompatibleDC, @hDC
-    mov hDCFloor, eax
-    invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
-    invoke SelectObject, hDCFloor, eax
-    invoke BitBlt, hDCFloor, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 3 * BLOCK_SIZE, BLOCK_SIZE, SRCCOPY
-    
-    invoke CreateCompatibleDC, @hDC
-    mov hDCWall, eax
-    invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
-    invoke SelectObject, hDCWall, eax
-    invoke BitBlt, hDCWall, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, 6 * BLOCK_SIZE, 0, SRCCOPY
-    
-    invoke CreateCompatibleDC, @hDC
-    mov hDCBraver, eax
-    invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
-    invoke SelectObject, hDCBraver, eax
-    invoke BitBlt, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCHero, 0, 0, SRCCOPY
 
-    CreateHDC macro hDC, x, y
+    invoke CreateCompatibleDC, NULL
+    mov hDCMap, eax
+    invoke SelectObject, hDCMap, hBitmapMap
+    ; Create Block size DC and Select from Other DC
+    SelectBlock macro hDCChild, hDCParent, x, y
         invoke CreateCompatibleDC, @hDC
-        mov hDC, eax
+        mov hDCChild, eax
         invoke CreateCompatibleBitmap, @hDC, BLOCK_SIZE, BLOCK_SIZE
-        invoke SelectObject, hDC, eax
-        invoke BitBlt, hDC, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCTile, x * BLOCK_SIZE, y * BLOCK_SIZE, SRCCOPY
+        invoke SelectObject, hDCChild, eax
+        invoke BitBlt, hDCChild, 0, 0, BLOCK_SIZE, BLOCK_SIZE, hDCParent, x * BLOCK_SIZE, y * BLOCK_SIZE, SRCCOPY
     endm
-    lea esi, hDCNumbers
-    CreateHDC [esi], 1, 23
-    add esi, 4
-    CreateHDC [esi], 2, 23
-    add esi, 4
-    CreateHDC [esi], 3, 23
-    add esi, 4
-    CreateHDC [esi], 4, 23
-    add esi, 4
-    CreateHDC [esi], 5, 23
-    add esi, 4
-    CreateHDC [esi], 1, 24
-    add esi, 4
-    CreateHDC [esi], 2, 24
-    add esi, 4
-    CreateHDC [esi], 3, 24
-    add esi, 4
-    CreateHDC [esi], 4, 24
-    add esi, 4
-    CreateHDC [esi], 5, 24
+    SelectBlock hDCBraver, hDCHero, 0, 0
 
-    CreateHDC hDCYellowDoor, 0, 30
-    CreateHDC hDCBlueDoor, 1, 30
-    CreateHDC hDCRedDoor, 2, 30
-    CreateHDC hDCUpstair, 1, 31
-    CreateHDC hDCDownstair, 0, 31
+    lea esi, hDCNumbers
+    SelectBlock [esi], hDCTile, 1, 23
+    add esi, 4
+    SelectBlock [esi], hDCTile, 2, 23
+    add esi, 4
+    SelectBlock [esi], hDCTile, 3, 23
+    add esi, 4
+    SelectBlock [esi], hDCTile, 4, 23
+    add esi, 4
+    SelectBlock [esi], hDCTile, 5, 23
+    add esi, 4
+    SelectBlock [esi], hDCTile, 1, 24
+    add esi, 4
+    SelectBlock [esi], hDCTile, 2, 24
+    add esi, 4
+    SelectBlock [esi], hDCTile, 3, 24
+    add esi, 4
+    SelectBlock [esi], hDCTile, 4, 24
+    add esi, 4
+    SelectBlock [esi], hDCTile, 5, 24
+
+    SelectBlock hDCFloor, hDCMap, 0, 0
+    SelectBlock hDCWall, hDCMap, 1, 0
+    SelectBlock hDCYellowDoor, hDCMap, 0, 1
+    SelectBlock hDCBlueDoor, hDCMap, 1, 1
+    SelectBlock hDCRedDoor, hDCMap, 2, 1
+    SelectBlock hDCDownstair, hDCMap, 3, 2
+    SelectBlock hDCUpstair, hDCMap, 4, 2
+    SelectBlock hDCKeyYellow, hDCMap, 5, 1
+    SelectBlock hDCKeyBlue, hDCMap, 6, 1
+    SelectBlock hDCKeyRed, hDCMap, 7, 1
+
+    invoke DeleteObject, hDCMap
 
     ; combine background
     invoke CreateCompatibleDC, @hDC
