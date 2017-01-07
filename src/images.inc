@@ -25,6 +25,9 @@ extrn hDCNPCWise: HDC
 extrn hDCNPCMerchant: HDC
 extrn hDCNPCThief: HDC
 
+extrn hDCSwordIron: HDC
+extrn hDCShieldIron: HDC
+
 extrn hDCShopLeft: HDC
 extrn hDCShopCenter: HDC
 extrn hDCShopRight: HDC

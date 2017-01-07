@@ -294,6 +294,22 @@ Touch proc hWnd, x, y, z
       invoke PlayOnItem
       PrintText '你获得了一个红钥匙'
       mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_SWORD_IRON
+      add I.ATK, 10
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectATK, TRUE
+      invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了铁剑，攻击力+10'
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_SHIELD_IRON
+      add I.DEF, 10
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectDEF, TRUE
+      invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了铁盾，攻击力+10'
+      mov @bRet, TRUE
     .endif
   .elseif ah == MAP_TYPE_ENEMY
     .if eax == MAP_TYPE_ENEMY_01

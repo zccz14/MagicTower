@@ -11,6 +11,8 @@ public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 ; public items
 public hDCBottleRed, hDCBottleBlue, hDCStoneRed, hDCStoneBlue
 
+public hDCSwordIron, hDCShieldIron
+
 public hDCEnemy01, hDCEnemy02, hDCEnemy03, hDCEnemy04
 public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08, hDCEnemy09
 ; include
@@ -26,6 +28,7 @@ szBitmapItem db 'images\\item.bmp', 0
 szBitmapMap db 'images\\map.bmp', 0
 szBitmapEnemies db 'images\\enemies.bmp', 0
 szBitmapNPC db 'images\\npc.bmp', 0
+szBitmapEquip db 'images\\equip.bmp', 0
 
 .data?
 hIcon dd ?
@@ -35,12 +38,14 @@ hBitmapItem dd ?
 hBitmapMap dd ?
 hBitmapEnemies dd ?
 hBitmapNPC dd ?
+hBitmapEquip dd ?
 
 hDCMap dd ?
 hDCTile dd ?
 hDCEnemies dd ?
 hDCItem dd ?
 hDCNPC dd ?
+hDCEquip dd ?
 
 hDCFloor dd ?
 hDCWall dd ?
@@ -73,6 +78,19 @@ hDCBottleRed dd ?
 hDCBottleBlue dd ?
 hDCStoneRed dd ?
 hDCStoneBlue dd ?
+; sword and shield
+hDCSwordIron dd ?
+hDCSwordSliver dd ?
+hDCSwordKnight dd ?
+hDCSwordHoly dd ?
+hDCSwordSacred dd ?
+
+hDCShieldIron dd ?
+hDCShieldSliver dd ?
+hDCShieldKnight dd ?
+hDCShieldHoly dd ?
+hDCShieldSacred dd ?
+
 
 ; enemies
 hDCEnemy01 dd ?
@@ -102,6 +120,8 @@ PreloadImages proc
     mov hBitmapEnemies, eax
     invoke LoadImage, NULL, addr szBitmapNPC, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
     mov hBitmapNPC, eax
+    invoke LoadImage, NULL, addr szBitmapEquip, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
+    mov hBitmapEquip, eax
     ret
 PreloadImages endp
 
@@ -143,6 +163,10 @@ PrepareDC proc hWnd
     invoke CreateCompatibleDC, NULL
     mov hDCNPC, eax
     invoke SelectObject, hDCNPC, hBitmapNPC
+
+    invoke CreateCompatibleDC, NULL
+    mov hDCEquip, eax
+    invoke SelectObject, hDCEquip, hBitmapEquip
 
     ; Create Block size DC and Select from Other DC
     SelectBlock macro hDCChild, hDCParent, x, y
@@ -193,6 +217,9 @@ PrepareDC proc hWnd
     SelectBlock hDCNPCWise, hDCNPC, 0, 0
     SelectBlock hDCNPCMerchant, hDCNPC, 0, 1
     SelectBlock hDCNPCThief, hDCNPC, 0, 2
+
+    SelectBlock hDCSwordIron, hDCEquip, 0, 0
+    SelectBlock hDCShieldIron, hDCEquip, 0, 2
 
     SelectBlock hDCShopLeft, hDCMap, 4, 0
     SelectBlock hDCShopCenter, hDCMap, 5, 0
