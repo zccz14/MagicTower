@@ -191,24 +191,32 @@ Touch proc hWnd, x, y
       invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectHP, TRUE
       invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你喝下了红色药水，生命值+50'
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_BOTTLE_BLUE
       add I.HP, 200
       invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectHP, TRUE
       invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你喝下了蓝色药水，生命值+200'
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_STONE_RED
       add I.ATK, 1
       invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectATK, TRUE
       invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了红宝石，攻击力+1'
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_STONE_BLUE
       add I.DEF, 1
       invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectDEF, TRUE
       invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了蓝宝石，防御力+1'
       mov @bRet, TRUE
     .endif
   .elseif ah == 1
@@ -252,8 +260,6 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   local @lNewY
   mLet @lNewX, I.pos.x
   mLet @lNewY, I.pos.y
-  PrintHex wParam
-  PrintHex lParam
   .if wParam == VK_UP
     dec @lNewY
   .elseif wParam == VK_DOWN
@@ -262,7 +268,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
     dec @lNewX
   .elseif wParam == VK_RIGHT
     inc @lNewX
-  .elseif wParam == 52H
+  .elseif wParam == 52H; The R Key
     ; restart game
     invoke MapInit
     invoke BraverInit
@@ -430,6 +436,7 @@ _WinMain endp
 
 __main proc
   PrintLine
+  invoke BraverInit
   invoke MapInit
   invoke PreloadImages
   invoke _WinMain
