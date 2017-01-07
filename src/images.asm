@@ -2,8 +2,9 @@
 public hBitmapHero, hBitmapTile, hIcon
 public PreloadImages, PrepareDC
 public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground, hDCNumbers
-public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
+public hDCDoorYellow, hDCDoorBlue, hDCDoorRed, hDCDoorAuto, hDCDoorIron
 public hDCUpstair, hDCDownstair
+public hDCNPCWise, hDCNPCMerchant, hDCNPCThief
 public hDCShopLeft, hDCShopRight, hDCShopCenter
 public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 
@@ -24,6 +25,7 @@ szBitmapHero db 'images\\hero.bmp', 0
 szBitmapItem db 'images\\item.bmp', 0
 szBitmapMap db 'images\\map.bmp', 0
 szBitmapEnemies db 'images\\enemies.bmp', 0
+szBitmapNPC db 'images\\npc.bmp', 0
 
 .data?
 hIcon dd ?
@@ -32,11 +34,13 @@ hBitmapTile dd ?
 hBitmapItem dd ?
 hBitmapMap dd ?
 hBitmapEnemies dd ?
+hBitmapNPC dd ?
 
 hDCMap dd ?
 hDCTile dd ?
 hDCEnemies dd ?
 hDCItem dd ?
+hDCNPC dd ?
 
 hDCFloor dd ?
 hDCWall dd ?
@@ -44,9 +48,13 @@ hDCBraver dd ?
 hDCHero dd ?
 hDCBackground dd ?
 hDCNumbers dd 10 dup(?)
-hDCYellowDoor dd ?
-hDCBlueDoor dd ?
-hDCRedDoor dd ?
+
+hDCDoorYellow dd ?
+hDCDoorBlue dd ?
+hDCDoorRed dd ?
+hDCDoorAuto dd ?
+hDCDoorIron dd ?
+
 hDCUpstair dd ?
 hDCDownstair dd ?
 hDCKeyYellow dd ?
@@ -56,6 +64,10 @@ hDCKeyRed dd ?
 hDCShopLeft dd ?
 hDCShopRight dd ?
 hDCShopCenter dd ?
+; npc
+hDCNPCMerchant dd ?
+hDCNPCWise dd ?
+hDCNPCThief dd ?
 ; items
 hDCBottleRed dd ?
 hDCBottleBlue dd ?
@@ -88,6 +100,8 @@ PreloadImages proc
     mov hBitmapMap, eax
     invoke LoadImage, NULL, addr szBitmapEnemies, IMAGE_BITMAP, 128, 640, LR_LOADFROMFILE
     mov hBitmapEnemies, eax
+    invoke LoadImage, NULL, addr szBitmapNPC, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
+    mov hBitmapNPC, eax
     ret
 PreloadImages endp
 
@@ -126,6 +140,10 @@ PrepareDC proc hWnd
     mov hDCEnemies, eax
     invoke SelectObject, hDCEnemies, hBitmapEnemies
 
+    invoke CreateCompatibleDC, NULL
+    mov hDCNPC, eax
+    invoke SelectObject, hDCNPC, hBitmapNPC
+
     ; Create Block size DC and Select from Other DC
     SelectBlock macro hDCChild, hDCParent, x, y
         invoke CreateCompatibleDC, @hDC
@@ -159,14 +177,22 @@ PrepareDC proc hWnd
 
     SelectBlock hDCFloor, hDCMap, 0, 0
     SelectBlock hDCWall, hDCMap, 1, 0
-    SelectBlock hDCYellowDoor, hDCMap, 0, 1
-    SelectBlock hDCBlueDoor, hDCMap, 1, 1
-    SelectBlock hDCRedDoor, hDCMap, 2, 1
+
+    SelectBlock hDCDoorYellow, hDCMap, 0, 1
+    SelectBlock hDCDoorBlue, hDCMap, 1, 1
+    SelectBlock hDCDoorRed, hDCMap, 2, 1
+    SelectBlock hDCDoorAuto, hDCMap, 3, 1
+    SelectBlock hDCDoorIron, hDCMap, 4, 1
+    
     SelectBlock hDCDownstair, hDCMap, 3, 2
     SelectBlock hDCUpstair, hDCMap, 4, 2
     SelectBlock hDCKeyYellow, hDCMap, 5, 1
     SelectBlock hDCKeyBlue, hDCMap, 6, 1
     SelectBlock hDCKeyRed, hDCMap, 7, 1
+    
+    SelectBlock hDCNPCWise, hDCNPC, 0, 0
+    SelectBlock hDCNPCMerchant, hDCNPC, 0, 1
+    SelectBlock hDCNPCThief, hDCNPC, 0, 2
 
     SelectBlock hDCShopLeft, hDCMap, 4, 0
     SelectBlock hDCShopCenter, hDCMap, 5, 0

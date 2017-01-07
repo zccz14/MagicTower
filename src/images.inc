@@ -7,15 +7,23 @@ extrn hDCWall: HDC
 extrn hDCBraver: HDC
 extrn hDCBackground: HDC
 extrn hDCNumbers: ptr HDC
-extrn hDCYellowDoor: HDC
-extrn hDCBlueDoor: HDC
-extrn hDCRedDoor: HDC
+
+extrn hDCDoorYellow: HDC
+extrn hDCDoorBlue: HDC
+extrn hDCDoorRed: HDC
+extrn hDCDoorAuto: HDC
+extrn hDCDoorIron: HDC
+
 extrn hDCUpstair: HDC
 extrn hDCDownstair: HDC
 
 extrn hDCKeyYellow: HDC
 extrn hDCKeyBlue: HDC
 extrn hDCKeyRed: HDC
+
+extrn hDCNPCWise: HDC
+extrn hDCNPCMerchant: HDC
+extrn hDCNPCThief: HDC
 
 extrn hDCShopLeft: HDC
 extrn hDCShopCenter: HDC
