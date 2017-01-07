@@ -4,6 +4,7 @@ public PreloadImages, PrepareDC
 public hDCTile, hDCFloor, hDCWall, hDCBraver, hDCBackground, hDCNumbers
 public hDCYellowDoor, hDCBlueDoor, hDCRedDoor
 public hDCUpstair, hDCDownstair
+public hDCShopLeft, hDCShopRight, hDCShopCenter
 public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 
 ; public items
@@ -51,6 +52,10 @@ hDCDownstair dd ?
 hDCKeyYellow dd ?
 hDCKeyBlue dd ?
 hDCKeyRed dd ?
+; shop
+hDCShopLeft dd ?
+hDCShopRight dd ?
+hDCShopCenter dd ?
 ; items
 hDCBottleRed dd ?
 hDCBottleBlue dd ?
@@ -162,6 +167,10 @@ PrepareDC proc hWnd
     SelectBlock hDCKeyYellow, hDCMap, 5, 1
     SelectBlock hDCKeyBlue, hDCMap, 6, 1
     SelectBlock hDCKeyRed, hDCMap, 7, 1
+
+    SelectBlock hDCShopLeft, hDCMap, 4, 0
+    SelectBlock hDCShopCenter, hDCMap, 5, 0
+    SelectBlock hDCShopRight, hDCMap, 6, 0
 
     SelectBlock hDCStoneRed, hDCItem, 0, 0
     SelectBlock hDCStoneBlue, hDCItem, 1, 0

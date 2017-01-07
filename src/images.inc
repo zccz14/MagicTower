@@ -17,6 +17,10 @@ extrn hDCKeyYellow: HDC
 extrn hDCKeyBlue: HDC
 extrn hDCKeyRed: HDC
 
+extrn hDCShopLeft: HDC
+extrn hDCShopCenter: HDC
+extrn hDCShopRight: HDC
+
 extrn hDCStoneRed: HDC
 extrn hDCStoneBlue: HDC
 extrn hDCBottleRed: HDC
