@@ -8,6 +8,8 @@ include <map.inc>
 
 .data
 szText db 100 dup(?), 0
+shopPrice dd 20
+shopCnt dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
@@ -36,6 +38,14 @@ stRectBlue RECT <1 * BLOCK_SIZE, 8 * BLOCK_SIZE, 4 * BLOCK_SIZE, 9 * BLOCK_SIZE>
 stRectRed RECT <1 * BLOCK_SIZE, 9 * BLOCK_SIZE, 4 * BLOCK_SIZE, 10 * BLOCK_SIZE>
 
 .code
+
+GameInit proc
+  invoke BraverInit
+  invoke MapInit
+  mov shopPrice, 20
+  mov shopCnt, 0
+  ret
+GameInit endp
 
 GetBlockRect proc x, y, pstRect
   mov ebx, BLOCK_SIZE
@@ -93,6 +103,57 @@ Battle proc HP, ATK, DEF, MON
   mov eax, 1
   ret
 Battle endp
+
+; void lpfnShop();
+lpfnShop proc uses eax ebx hWnd
+    local @buy
+    mov eax, shopPrice
+    .if I.MON < eax
+      invoke crt_sprintf, addr szText, CTEXT('购买属性需要 %d 金币，但你只有 %d 金币'), shopPrice, I.MON
+      invoke MessageBox, hWnd, addr szText, CTEXT('商店'), MB_OK
+      ret
+    .endif
+    invoke crt_sprintf, addr szText, CTEXT('给我 %d 金币，我能给你加个祝福'), shopPrice
+    invoke MessageBox, hWnd, addr szText, CTEXT('商店'), MB_OKCANCEL
+    .if eax == IDCANCEL
+      ret
+    .endif
+    mov @buy, 0
+    invoke MessageBox, hWnd, CTEXT('那么是需要加 100 点生命嘛？'), CTEXT('商店'), MB_YESNOCANCEL
+    .if eax == IDYES
+      mov @buy, 1
+      add I.HP, 100
+      invoke InvalidateRect, hWnd, addr stRectHP, TRUE
+    .endif
+    .if @buy == 0
+      invoke MessageBox, hWnd, CTEXT('那么是需要加 2 点攻击力嘛？'), CTEXT('商店'), MB_YESNOCANCEL
+      .if eax == IDYES
+        mov @buy, 2
+        add I.ATK, 2
+        invoke InvalidateRect, hWnd, addr stRectATK, TRUE
+      .endif
+    .endif
+    .if @buy == 0
+      invoke MessageBox, hWnd, CTEXT('那… 4 点防御力？'), CTEXT('商店'), MB_YESNOCANCEL
+      .if eax == IDYES
+        mov @buy, 3
+        add I.DEF, 4
+        invoke InvalidateRect, hWnd, addr stRectDEF, TRUE
+      .endif
+    .endif
+    .if @buy != 0
+      mov eax, shopPrice
+      sub I.MON, eax
+      inc shopCnt
+      mov eax, shopCnt
+      mov ebx, 20
+      mul ebx
+      add shopPrice, eax
+      invoke InvalidateRect, hWnd, addr stRectMoney, TRUE
+      invoke UpdateWindow, hWnd
+    .endif
+    ret
+lpfnShop endp
 
 ; @returns {Boolean} 1 for accessible, 0 for wait
 Touch proc hWnd, x, y, z
@@ -171,6 +232,9 @@ Touch proc hWnd, x, y, z
     invoke GetClientRect, hWnd, addr @stRect
     invoke InvalidateRect, hWnd, addr @stRect, TRUE
     invoke UpdateWindow, hWnd
+    mov @bRet, FALSE
+  .elseif eax == MAP_TYPE_SHOP_CENTER
+    invoke lpfnShop, hWnd
     mov @bRet, FALSE
   .elseif ah == MAP_TYPE_ITEM
     ; items
@@ -288,8 +352,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
     inc @lNewX
   .elseif wParam == 52H; The R Key
     ; restart game
-    invoke MapInit
-    invoke BraverInit
+    invoke GameInit
     invoke GetClientRect, hWnd, addr @stRect
     invoke InvalidateRect, hWnd, addr @stRect, TRUE
     invoke UpdateWindow, hWnd
@@ -387,7 +450,11 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     invoke PostQuitMessage, NULL
   .elseif eax == WM_COMMAND
     .if wParam == IDM_NEWGAME
-      invoke MessageBox, hWinMain, addr szHeroHealth, addr szHeroAttack, MB_OK
+      invoke BraverInit
+      invoke MapInit
+      invoke GetClientRect, hWnd, addr @stRect
+      invoke InvalidateRect, hWnd, addr @stRect, TRUE
+      invoke UpdateWindow, hWnd
     .elseif wParam == IDM_QUIT
       invoke PostQuitMessage, 0
     .endif
@@ -454,8 +521,7 @@ _WinMain endp
 
 __main proc
   PrintLine
-  invoke BraverInit
-  invoke MapInit
+  invoke GameInit
   invoke PreloadImages
   invoke _WinMain
   invoke ExitProcess, 0
