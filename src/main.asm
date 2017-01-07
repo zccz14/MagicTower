@@ -95,7 +95,7 @@ Battle proc HP, ATK, DEF, MON
 Battle endp
 
 ; @returns {Boolean} 1 for accessible, 0 for wait
-Touch proc hWnd, x, y
+Touch proc hWnd, x, y, z
   local @stRect: RECT
   local @bRet: BOOL
   invoke GetBlockRect, x, y, addr @stRect
@@ -103,70 +103,49 @@ Touch proc hWnd, x, y
     mov eax, 0
     ret
   .endif
-  invoke GetBlock, I.pos.z, x, y
+  ;invoke GetEventID, x, y, I.pos.z
+  invoke GetBlock, z, x, y
   .if eax == MAP_TYPE_PATH
     mov @bRet, TRUE
-  .elseif eax == MAP_TYPE_DOOR_YELLOW
-    ; touch yellow door
-    .if I.yellow > 0
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
-      dec I.yellow
-      invoke InvalidateRect, hWnd, addr @stRect, TRUE
-      invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
-      invoke UpdateWindow, hWnd
-      invoke PlayOnDoor
+  .elseif ah == MAP_TYPE_DOOR
+    .if eax == MAP_TYPE_DOOR_YELLOW
+      ; touch yellow door
+      .if I.yellow > 0
+        invoke SetBlock, x, y, z, MAP_TYPE_PATH; open the door
+        dec I.yellow
+        invoke InvalidateRect, hWnd, addr @stRect, TRUE
+        invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
+        invoke UpdateWindow, hWnd
+        invoke PlayOnDoor
+      .endif
+      mov @bRet, FALSE
+    .elseif eax == MAP_TYPE_DOOR_BLUE
+      ; touch blue door
+      .if I.blue > 0
+        invoke SetBlock, x, y, z, MAP_TYPE_PATH; open the door
+        dec I.blue
+        invoke InvalidateRect, hWnd, addr @stRect, TRUE
+        invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
+        invoke UpdateWindow, hWnd
+        invoke PlayOnDoor
+      .endif
+      mov @bRet, FALSE
+    .elseif eax == MAP_TYPE_DOOR_RED
+      ; touch red door
+      .if I.red > 0
+        invoke SetBlock, x, y, z, MAP_TYPE_PATH; open the door
+        dec I.red
+        invoke InvalidateRect, hWnd, addr @stRect, TRUE
+        invoke InvalidateRect, hWnd, addr stRectRed, TRUE
+        invoke UpdateWindow, hWnd
+        invoke PlayOnDoor
+      .endif
+      mov @bRet, FALSE
     .endif
-    mov @bRet, FALSE
-  .elseif eax == MAP_TYPE_DOOR_BLUE
-    ; touch blue door
-    .if I.blue > 0
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
-      dec I.blue
-      invoke InvalidateRect, hWnd, addr @stRect, TRUE
-      invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
-      invoke UpdateWindow, hWnd
-      invoke PlayOnDoor
-    .endif
-    mov @bRet, FALSE
-  .elseif eax == MAP_TYPE_DOOR_RED
-    ; touch red door
-    .if I.red > 0
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH; open the door
-      dec I.red
-      invoke InvalidateRect, hWnd, addr @stRect, TRUE
-      invoke InvalidateRect, hWnd, addr stRectRed, TRUE
-      invoke UpdateWindow, hWnd
-      invoke PlayOnDoor
-    .endif
-    mov @bRet, FALSE
-  .elseif eax == MAP_TYPE_ITEM_KEY_YELLOW
-    inc I.yellow
-    invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
-    invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
-    invoke UpdateWindow, hWnd
-    invoke PlayOnItem
-    PrintText '你获得了一个黄钥匙'
-    mov @bRet, TRUE
-  .elseif eax == MAP_TYPE_ITEM_KEY_BLUE
-    inc I.blue
-    invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
-    invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
-    invoke UpdateWindow, hWnd
-    invoke PlayOnItem
-    PrintText '你获得了一个蓝钥匙'
-    mov @bRet, TRUE
-  .elseif eax == MAP_TYPE_ITEM_KEY_RED
-    inc I.red
-    invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
-    invoke InvalidateRect, hWnd, addr stRectRed, TRUE
-    invoke UpdateWindow, hWnd
-    invoke PlayOnItem
-    PrintText '你获得了一个红钥匙'
-    mov @bRet, TRUE
   .elseif eax == MAP_TYPE_UPSTAIR
     assume esi: ptr Position
     mov esi, offset PosUp
-    mov eax, I.pos.z
+    mov eax, z
     mov ebx, sizeof Position
     mul ebx
     add esi, eax
@@ -181,7 +160,7 @@ Touch proc hWnd, x, y
   .elseif eax == MAP_TYPE_DOWNSTAIR
     assume esi: ptr Position
     mov esi, offset PosDown
-    mov eax, I.pos.z
+    mov eax, z
     mov ebx, sizeof Position
     mul ebx
     add esi, eax
@@ -193,11 +172,11 @@ Touch proc hWnd, x, y
     invoke InvalidateRect, hWnd, addr @stRect, TRUE
     invoke UpdateWindow, hWnd
     mov @bRet, FALSE
-  .elseif ah == 2
+  .elseif ah == MAP_TYPE_ITEM
     ; items
     .if eax == MAP_TYPE_ITEM_BOTTLE_RED
       add I.HP, 50
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectHP, TRUE
       invoke UpdateWindow, hWnd
       invoke PlayOnItem
@@ -205,7 +184,7 @@ Touch proc hWnd, x, y
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_BOTTLE_BLUE
       add I.HP, 200
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectHP, TRUE
       invoke UpdateWindow, hWnd
       invoke PlayOnItem
@@ -213,7 +192,7 @@ Touch proc hWnd, x, y
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_STONE_RED
       add I.ATK, 1
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectATK, TRUE
       invoke UpdateWindow, hWnd
       invoke PlayOnItem
@@ -221,14 +200,38 @@ Touch proc hWnd, x, y
       mov @bRet, TRUE
     .elseif eax == MAP_TYPE_ITEM_STONE_BLUE
       add I.DEF, 1
-      invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
       invoke InvalidateRect, hWnd, addr stRectDEF, TRUE
       invoke UpdateWindow, hWnd
       invoke PlayOnItem
       PrintText '你获得了蓝宝石，防御力+1'
       mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_KEY_YELLOW
+      inc I.yellow
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
+      invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了一个黄钥匙'
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_KEY_BLUE
+      inc I.blue
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
+      invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了一个蓝钥匙'
+      mov @bRet, TRUE
+    .elseif eax == MAP_TYPE_ITEM_KEY_RED
+      inc I.red
+      invoke SetBlock, x, y, z, MAP_TYPE_PATH
+      invoke InvalidateRect, hWnd, addr stRectRed, TRUE
+      invoke UpdateWindow, hWnd
+      invoke PlayOnItem
+      PrintText '你获得了一个红钥匙'
+      mov @bRet, TRUE
     .endif
-  .elseif ah == 1
+  .elseif ah == MAP_TYPE_ENEMY
     .if eax == MAP_TYPE_ENEMY_01
       invoke Battle, 35, 18, 1, 1
     .elseif eax == MAP_TYPE_ENEMY_02
@@ -257,7 +260,7 @@ Touch proc hWnd, x, y
       mov eax, 0
       ret
     .endif
-    invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
+    invoke SetBlock, x, y, z, MAP_TYPE_PATH
     invoke InvalidateRect, hWnd, addr stRectHP, TRUE
     invoke InvalidateRect, hWnd, addr stRectMoney, TRUE
     invoke UpdateWindow, hWnd
@@ -294,7 +297,7 @@ ProcKeydown proc hWnd, uMsg, wParam, lParam
   .else
     ret
   .endif
-  invoke Touch, hWnd, @lNewX, @lNewY
+  invoke Touch, hWnd, @lNewX, @lNewY, I.pos.z
   .if eax == 0
     ret
   .else
