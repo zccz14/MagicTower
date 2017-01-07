@@ -62,7 +62,7 @@ mLet macro x, y
     mov x, eax
 endm
 
-FLOOR_CNT equ 5; 0 ~ 4
+FLOOR_CNT equ 11; 0 ~ 10
 ; Map::Type::
 MAP_TYPE_PATH equ 0
 MAP_TYPE_WALL equ 1
