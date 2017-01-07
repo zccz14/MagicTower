@@ -59,25 +59,34 @@ GetBlockRect endp
 Battle proc HP, ATK, DEF, MON
   mov eax, I.ATK
   .if eax <= DEF
+    PrintText '敌人防御过高，不可攻击'
     mov eax, 0
     ret
   .endif
-  sub eax, DEF
-  mov ebx, eax
-  mov eax, HP
-  mov edx, 0
-  div ebx
-  .if edx == 0
-    dec eax
-  .endif
-  mov ebx, eax
   mov eax, ATK
-  sub eax, I.DEF
-  mul ebx
+  .if eax < I.DEF
+    mov eax, 0
+  .else
+    mov eax, I.ATK
+    sub eax, DEF
+    mov ebx, eax
+    mov eax, HP
+    mov edx, 0
+    div ebx
+    .if edx == 0
+      dec eax
+    .endif
+    mov ebx, eax
+    mov eax, ATK
+    sub eax, I.DEF
+    mul ebx
+  .endif
   .if I.HP <= eax
+    PrintHex eax, '你的生命值过低'
     mov eax, 0
     ret
   .endif
+  PrintText '击杀敌人'
   sub I.HP, eax
   mov eax, MON
   add I.MON, eax
@@ -232,6 +241,12 @@ Touch proc hWnd, x, y
       invoke Battle, 50, 42, 6, 6
     .elseif eax == MAP_TYPE_ENEMY_06
       invoke Battle, 55, 52, 12, 8
+    .elseif eax == MAP_TYPE_ENEMY_07
+      invoke Battle, 50, 48, 22, 12
+    .elseif eax == MAP_TYPE_ENEMY_08
+      invoke Battle, 100, 65, 15, 30
+    .elseif eax == MAP_TYPE_ENEMY_09
+      invoke Battle, 100, 180, 110, 50
     .else
       PrintText '未知敌人'
       mov eax, 0

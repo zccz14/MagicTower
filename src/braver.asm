@@ -15,7 +15,7 @@ BraverInit proc
     mov I.pos.z, 1
     mov I.yellow, 0
     mov I.blue, 0
-    mov I.red, 0
+    mov I.red, 1
     ret
 BraverInit endp
 end

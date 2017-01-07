@@ -10,7 +10,7 @@ public hDCKeyYellow, hDCKeyBlue, hDCKeyRed
 public hDCBottleRed, hDCBottleBlue, hDCStoneRed, hDCStoneBlue
 
 public hDCEnemy01, hDCEnemy02, hDCEnemy03, hDCEnemy04
-public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08
+public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08, hDCEnemy09
 ; include
 include <stdafx.inc>
 include <background.inc>
@@ -66,6 +66,7 @@ hDCEnemy05 dd ?
 hDCEnemy06 dd ?
 hDCEnemy07 dd ?
 hDCEnemy08 dd ?
+hDCEnemy09 dd ?
 
 .code
 PreloadImages proc
@@ -80,7 +81,7 @@ PreloadImages proc
     mov hBitmapItem, eax
     invoke LoadImage, NULL, addr szBitmapMap, IMAGE_BITMAP, 256, 128, LR_LOADFROMFILE
     mov hBitmapMap, eax
-    invoke LoadImage, NULL, addr szBitmapEnemies, IMAGE_BITMAP, 128, 512, LR_LOADFROMFILE
+    invoke LoadImage, NULL, addr szBitmapEnemies, IMAGE_BITMAP, 128, 640, LR_LOADFROMFILE
     mov hBitmapEnemies, eax
     ret
 PreloadImages endp
@@ -173,6 +174,9 @@ PrepareDC proc hWnd
     SelectBlock hDCEnemy04, hDCEnemies, 0, 8
     SelectBlock hDCEnemy05, hDCEnemies, 0, 12
     SelectBlock hDCEnemy06, hDCEnemies, 0, 13
+    SelectBlock hDCEnemy07, hDCEnemies, 0, 16
+    SelectBlock hDCEnemy08, hDCEnemies, 0, 14
+    SelectBlock hDCEnemy09, hDCEnemies, 0, 17
 
     invoke DeleteObject, hDCMap
 
