@@ -139,7 +139,7 @@ Touch proc hWnd, x, y
       invoke PlayOnDoor
     .endif
     mov @bRet, FALSE
-  .elseif eax == MAP_TYPE_KEY_YELLOW
+  .elseif eax == MAP_TYPE_ITEM_KEY_YELLOW
     inc I.yellow
     invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
     invoke InvalidateRect, hWnd, addr stRectYellow, TRUE
@@ -147,7 +147,7 @@ Touch proc hWnd, x, y
     invoke PlayOnItem
     PrintText '你获得了一个黄钥匙'
     mov @bRet, TRUE
-  .elseif eax == MAP_TYPE_KEY_BLUE
+  .elseif eax == MAP_TYPE_ITEM_KEY_BLUE
     inc I.blue
     invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
     invoke InvalidateRect, hWnd, addr stRectBlue, TRUE
@@ -155,7 +155,7 @@ Touch proc hWnd, x, y
     invoke PlayOnItem
     PrintText '你获得了一个蓝钥匙'
     mov @bRet, TRUE
-  .elseif eax == MAP_TYPE_KEY_RED
+  .elseif eax == MAP_TYPE_ITEM_KEY_RED
     inc I.red
     invoke SetBlock, x, y, I.pos.z, MAP_TYPE_PATH
     invoke InvalidateRect, hWnd, addr stRectRed, TRUE
