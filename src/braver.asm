@@ -7,8 +7,8 @@ I Braver <>
 .code
 BraverInit proc
     mov I.HP, 1000
-    mov I.ATK, 100
-    mov I.DEF, 100
+    mov I.ATK, 10
+    mov I.DEF, 10
     mov I.MON, 0
     mov I.pos.x, 6
     mov I.pos.y, 11
