@@ -15,6 +15,9 @@ public hDCSwordIron, hDCShieldIron
 
 public hDCEnemy01, hDCEnemy02, hDCEnemy03, hDCEnemy04
 public hDCEnemy05, hDCEnemy06, hDCEnemy07, hDCEnemy08, hDCEnemy09
+
+public hDCBoomBG
+public hDCBoom
 ; include
 include <stdafx.inc>
 include <background.inc>
@@ -29,6 +32,7 @@ szBitmapMap db 'images\\map.bmp', 0
 szBitmapEnemies db 'images\\enemies.bmp', 0
 szBitmapNPC db 'images\\npc.bmp', 0
 szBitmapEquip db 'images\\equip.bmp', 0
+szBitmapBoom db 'images\\boom.bmp', 0
 
 .data?
 hIcon dd ?
@@ -39,6 +43,7 @@ hBitmapMap dd ?
 hBitmapEnemies dd ?
 hBitmapNPC dd ?
 hBitmapEquip dd ?
+hBitmapBoomBG dd ?
 
 hDCMap dd ?
 hDCTile dd ?
@@ -46,6 +51,7 @@ hDCEnemies dd ?
 hDCItem dd ?
 hDCNPC dd ?
 hDCEquip dd ?
+hDCBoomBG dd ?
 
 hDCFloor dd ?
 hDCWall dd ?
@@ -103,6 +109,8 @@ hDCEnemy07 dd ?
 hDCEnemy08 dd ?
 hDCEnemy09 dd ?
 
+hDCBoom dd ?
+
 .code
 PreloadImages proc
     local @hDC: HDC
@@ -122,6 +130,8 @@ PreloadImages proc
     mov hBitmapNPC, eax
     invoke LoadImage, NULL, addr szBitmapEquip, IMAGE_BITMAP, 128, 128, LR_LOADFROMFILE
     mov hBitmapEquip, eax
+    invoke LoadImage, NULL, addr szBitmapBoom, IMAGE_BITMAP, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, LR_LOADFROMFILE
+    mov hBitmapBoomBG, eax
     ret
 PreloadImages endp
 
@@ -167,6 +177,10 @@ PrepareDC proc hWnd
     invoke CreateCompatibleDC, NULL
     mov hDCEquip, eax
     invoke SelectObject, hDCEquip, hBitmapEquip
+
+    invoke CreateCompatibleDC, NULL
+    mov hDCBoomBG, eax
+    invoke SelectObject, hDCBoomBG, hBitmapBoomBG
 
     ; Create Block size DC and Select from Other DC
     SelectBlock macro hDCChild, hDCParent, x, y
@@ -239,6 +253,8 @@ PrepareDC proc hWnd
     SelectBlock hDCEnemy07, hDCEnemies, 0, 16
     SelectBlock hDCEnemy08, hDCEnemies, 0, 14
     SelectBlock hDCEnemy09, hDCEnemies, 0, 17
+
+    SelectBlock hDCBoom, hDCMap, 5, 2
 
     invoke DeleteObject, hDCMap
 

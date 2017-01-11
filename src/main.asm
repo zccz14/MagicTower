@@ -10,6 +10,7 @@ include <map.inc>
 szText db 100 dup(?), 0
 shopPrice dd 20
 shopCnt dd 0
+state dd 0
 .data?
 hInstance dd  ?
 hWinMain dd  ?
@@ -233,6 +234,23 @@ Touch proc hWnd, x, y, z
     invoke InvalidateRect, hWnd, addr @stRect, TRUE
     invoke UpdateWindow, hWnd
     mov @bRet, FALSE
+  .elseif eax == MAP_TYPE_BOOM
+    invoke MessageBox, hWnd, CTEXT('好像踩到了什么东西'), CTEXT('Event'), MB_OK
+    inc state
+    invoke GetClientRect, hWnd, addr @stRect
+    invoke InvalidateRect, hWnd, addr @stRect, TRUE
+    invoke UpdateWindow, hWnd
+    invoke MessageBox, hWnd, CTEXT('胜败乃兵家常事，请勇者重新再来'), CTEXT('勇者死了'), MB_OKCANCEL
+    .if eax == IDOK
+      invoke GameInit
+      mov state, 0
+      invoke GetClientRect, hWnd, addr @stRect
+      invoke InvalidateRect, hWnd, addr @stRect, TRUE
+      invoke UpdateWindow, hWnd
+      mov @bRet, FALSE
+    .else
+      invoke PostQuitMessage, hWnd
+    .endif
   .elseif eax == MAP_TYPE_SHOP_CENTER
     invoke lpfnShop, hWnd
     mov @bRet, FALSE
@@ -402,6 +420,9 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
   .if eax == WM_PAINT
     invoke BeginPaint, hWnd, addr @stPs
     mov @hDc, eax
+    .if state == 1
+      invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, hDCBoomBG, 0, 0, SRCCOPY
+    .elseif state == 0
     ; draw background
     invoke BitBlt, @hDc, 0, 0, 20 * BLOCK_SIZE, 15 * BLOCK_SIZE, hDCBackground, 0, 0, SRCCOPY
     ; avatar
@@ -455,7 +476,7 @@ _ProcWinMain proc uses ebx edi esi hWnd, uMsg, wParam, lParam
     mul bx
     pop ebx
     invoke TransparentBlt, @hDc, ebx, eax, BLOCK_SIZE, BLOCK_SIZE, hDCBraver, 0, 0, BLOCK_SIZE, BLOCK_SIZE, 0FFFFFFh
-
+    .endif
     invoke EndPaint, hWnd, addr @stPs
   .elseif eax == WM_KEYDOWN
     invoke ProcKeydown, hWnd, uMsg, wParam, lParam

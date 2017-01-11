@@ -47,5 +47,8 @@ extrn hDCEnemy07: HDC
 extrn hDCEnemy08: HDC
 extrn hDCEnemy09: HDC
 
+extrn hDCBoom: HDC
+extrn hDCBoomBG: HDC
+
 PreloadImages proto
 PrepareDC proto hWnd: HWND
